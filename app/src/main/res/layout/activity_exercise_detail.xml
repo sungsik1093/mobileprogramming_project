@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FB"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="22dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 🔙 BACK -->
+        <ImageView
+            android:id="@+id/btn_back"
+            android:src="@drawable/ic_back_arrow"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
+        <!-- 🟦 Title -->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="플랭크"
+            android:textColor="#111827"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <!-- 🖼 운동 이미지 영역 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="18dp"
+            android:background="@drawable/bg_image_card"
+            android:elevation="5dp"
+            android:layout_marginTop="26dp">
+
+            <ImageView
+                android:id="@+id/iv_exercise_image"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_plank"/>
+        </LinearLayout>
+
+        <!-- 📘 운동 정보 카드  -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_exercise_card"
+            android:padding="22dp"
+            android:elevation="4dp"
+            android:layout_marginTop="28dp">
+
+            <!-- 운동명 -->
+            <TextView
+                android:id="@+id/tv_ex_name"
+                android:text="플랭크"
+                android:textColor="#111827"
+                android:textStyle="bold"
+                android:textSize="22sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <!-- 난이도 별 -->
+            <LinearLayout
+                android:id="@+id/layout_stars"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <!-- 운동 설명 -->
+            <TextView
+                android:id="@+id/tv_ex_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="코어 강화 운동으로 자세 안정성을 높여줍니다.\n\n1) 팔꿈치는 어깨 바로 아래\n2) 몸은 일직선 유지\n3) 30~60초 유지"
+                android:textColor="#374151"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- CTA 버튼 -->
+        <Button
+            android:id="@+id/btn_start_exercise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="운동 완료"
+            android:layout_marginTop="32dp"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:padding="16dp"
+            android:background="@drawable/bg_primary_button"/>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 운동 추천 화면 UI -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#F8F9FB"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="@drawable/bg_exercise_card"
+            android:padding="20dp"
+            android:elevation="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- 현재 날씨 설명 -->
+            <TextView
+                android:id="@+id/tv_weather_info"
+                android:text="현재 14℃ · 실내/실외 운동 가능"
+                android:textColor="#111827"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <!-- 운동 추천 문구 -->
+            <TextView
+                android:id="@+id/tv_weather_recommend"
+                android:text="추천 운동: 가벼운 조깅 또는 실내 코어운동"
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:text="실내 운동"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#111827"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"/>
+
+        <GridLayout
+            android:id="@+id/grid_indoor"
+            android:columnCount="3"
+            android:alignmentMode="alignMargins"
+            android:useDefaultMargins="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- 구분 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
+
+        <TextView
+            android:text="실외 운동"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="#111827"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"/>
+
+        <GridLayout
+            android:id="@+id/grid_outdoor"
+            android:columnCount="3"
+            android:alignmentMode="alignMargins"
+            android:useDefaultMargins="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- 구분 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <LinearLayout
+            android:background="@drawable/bg_exercise_card"
+            android:orientation="vertical"
+            android:elevation="4dp"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="오늘 뭐하지?"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#111827"
+                android:layout_marginBottom="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btn_random_exercise"
+                android:text="랜덤 운동 추천 🎲"
+                android:textColor="#111827"
+                android:background="@drawable/bg_secondary_button"
+                android:padding="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_start_today"
+            android:text="오늘 운동 시작하기"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_primary_button"
+            android:padding="14dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</ScrollView>
