@@ -95,6 +95,6 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:padding="16dp"
-            android:background="@drawable/bg_primary_button"/>
+            android:backgroundTint="#4C8EFF"/>
     </LinearLayout>
 </ScrollView>

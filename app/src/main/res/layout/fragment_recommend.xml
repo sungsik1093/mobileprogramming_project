@@ -110,8 +110,8 @@
             <Button
                 android:id="@+id/btn_random_exercise"
                 android:text="랜덤 운동 추천 🎲"
-                android:textColor="#111827"
-                android:background="@drawable/bg_secondary_button"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#4C8EFF"
                 android:padding="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -121,7 +121,7 @@
             android:id="@+id/btn_start_today"
             android:text="오늘 운동 시작하기"
             android:textColor="#FFFFFF"
-            android:background="@drawable/bg_primary_button"
+            android:backgroundTint="#4C8EFF"
             android:padding="14dp"
             android:textSize="16sp"
             android:layout_width="match_parent"

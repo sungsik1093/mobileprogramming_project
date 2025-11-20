@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:text="운동 완료 사진 찍기"
             android:textColor="#FFFFFF"
-            android:background="@drawable/bg_primary_button"
+            android:backgroundTint="#4C8EFF"
             android:layout_marginBottom="20dp"/>
 
         <!-- 사진 미리보기 영역 -->
@@ -116,7 +116,7 @@
             android:layout_height="wrap_content"
             android:text="기록 저장"
             android:textColor="#FFFFFF"
-            android:background="@drawable/bg_primary_button"
+            android:backgroundTint="#4C8EFF"
             android:layout_marginBottom="12dp"/>
 
         <!-- 공유 버튼 -->
@@ -125,8 +125,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="메이트에게 공유"
-            android:textColor="#111827"
-            android:background="@drawable/bg_secondary_button"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#4C8EFF"
             android:layout_marginBottom="12dp"/>
 
         <!-- 저장/공유 상태 메시지 -->
