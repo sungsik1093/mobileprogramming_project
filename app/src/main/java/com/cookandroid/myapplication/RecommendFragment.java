@@ -218,13 +218,30 @@ public class RecommendFragment extends Fragment {
     }
 
     private void recommendRandom() {
-        ArrayList<Exercise> all = new ArrayList<>();
-        all.addAll(getIndoorExercises());
-        all.addAll(getOutdoorExercises());
+        // 현재 날씨 기준으로 화면에 표시된 운동만 랜덤 추천
+        ArrayList<Exercise> availableExercises = new ArrayList<>();
 
-        if (!all.isEmpty() && isAdded()) {
-            int index = (int) (Math.random() * all.size());
-            openDetail(all.get(index));
+        // 화면에 보여진 실내 운동
+        for (int i = 0; i < gridIndoor.getChildCount(); i++) {
+            Object tag = gridIndoor.getChildAt(i).getTag();
+            if (tag instanceof Exercise) {
+                availableExercises.add((Exercise) tag);
+            }
+        }
+
+        // 화면에 보여진 실외 운동
+        for (int i = 0; i < gridOutdoor.getChildCount(); i++) {
+            Object tag = gridOutdoor.getChildAt(i).getTag();
+            if (tag instanceof Exercise) {
+                availableExercises.add((Exercise) tag);
+            }
+        }
+
+        if (!availableExercises.isEmpty() && isAdded()) {
+            int index = (int) (Math.random() * availableExercises.size());
+            openDetail(availableExercises.get(index));
+        } else {
+            Toast.makeText(requireContext(), "추천할 운동이 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -266,6 +283,9 @@ public class RecommendFragment extends Fragment {
 
             card.addView(iv);
             card.addView(tv);
+
+            // 운동 객체 태그로 저장
+            card.setTag(ex);
 
             card.setOnClickListener(v -> openDetail(ex));
 

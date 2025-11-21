@@ -84,6 +84,7 @@
             android:clipToOutline="true">
 
             <TextView
+                android:id="@+id/tv_today_exercise_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="오늘의 운동 일정"

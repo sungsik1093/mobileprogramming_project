@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (currentFragment instanceof HomeFragment) {
                     mood = ((HomeFragment) currentFragment).getSelectedMood();
+                    if (mood == null) mood = "보통"; // 선택 안 했으면 기본
                 }
 
                 Intent intent = new Intent(MainActivity.this, CertActivity.class);

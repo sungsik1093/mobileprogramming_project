@@ -1,6 +1,5 @@
 package com.cookandroid.myapplication;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +21,11 @@ import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
-    TextView tvDate;
+    TextView tvDate, tvTodayTitle;
     ImageView moodGood, moodSoso, moodBad;
     LinearLayout todayExerciseLayout;
 
-    String selectedMood = null; // 초기값: 선택하지 않음
+    private String selectedMood = null; // 초기값: 선택하지 않음
 
     @Nullable
     @Override
@@ -36,14 +35,19 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
         tvDate = v.findViewById(R.id.tv_today_date);
+        tvTodayTitle = v.findViewById(R.id.tv_today_exercise_title); // 제목 TextView
         moodGood = v.findViewById(R.id.mood_good);
         moodSoso = v.findViewById(R.id.mood_soso);
         moodBad = v.findViewById(R.id.mood_bad);
         todayExerciseLayout = v.findViewById(R.id.layout_today_exercise);
         Button btnGoWorkout = v.findViewById(R.id.btn_go_workout);
 
+        // 오늘 날짜 표시
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 (E)", Locale.KOREA);
         tvDate.setText(sdf.format(new Date()));
+
+        // 초기에는 제목 숨김
+        tvTodayTitle.setVisibility(View.GONE);
 
         View.OnClickListener moodClickListener = view -> {
             resetMoodBackground();
@@ -65,7 +69,6 @@ public class HomeFragment extends Fragment {
         moodBad.setOnClickListener(moodClickListener);
 
         btnGoWorkout.setOnClickListener(view -> {
-            // 운동하러 가기 클릭 시 RecommendFragment로 이동, 기분값 전달
             RecommendFragment fragment = new RecommendFragment();
             Bundle bundle = new Bundle();
             bundle.putString("selectedMood", selectedMood);
@@ -86,13 +89,22 @@ public class HomeFragment extends Fragment {
         moodBad.setBackgroundResource(R.drawable.bg_mood_unselected);
     }
 
+    /** 외부에서 mood 조회 가능하도록 public 메서드 제공 */
     public String getSelectedMood() {
         return selectedMood;
     }
 
     private void showTodayExercise() {
-        todayExerciseLayout.removeAllViews();
+        // 기존 운동 목록 제거 (첫 번째 자식: 제목 제외)
+        int childCount = todayExerciseLayout.getChildCount();
+        for (int i = childCount - 1; i >= 1; i--) {
+            todayExerciseLayout.removeViewAt(i);
+        }
+
         if (selectedMood == null) {
+            // 기분 선택 전: 제목 숨기고 안내 문구만 표시
+            tvTodayTitle.setVisibility(View.GONE);
+
             TextView tv = new TextView(getContext());
             tv.setText("오늘 기분을 선택하면 추천 운동이 나타나요 💪");
             tv.setTextSize(16);
@@ -100,6 +112,9 @@ public class HomeFragment extends Fragment {
             tv.setPadding(0, 28, 0, 28);
             todayExerciseLayout.addView(tv);
         } else {
+            // 기분 선택 후: 제목 표시 + 운동 목록
+            tvTodayTitle.setVisibility(View.VISIBLE);
+
             ArrayList<String> exercises = getExercisesByMoodAndTime(selectedMood);
             for (String ex : exercises) {
                 TextView tv = new TextView(getContext());
