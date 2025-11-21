@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 selected = new RecommendFragment();
             } else if (id == R.id.nav_cert) {
                 selected = new CertFragment();
-            } else if (id == R.id.nav_record) {   // ← 여기 수정됨
+            } else if (id == R.id.nav_record) {
                 selected = new CalendarFragment();
             }
 
@@ -49,5 +49,11 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 필요 시 상태 유지 로직 (예: 선택된 기분, 오늘의 운동 등)
     }
 }
