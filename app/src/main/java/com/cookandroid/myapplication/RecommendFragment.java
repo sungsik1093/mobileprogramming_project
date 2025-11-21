@@ -35,13 +35,13 @@ public class RecommendFragment extends Fragment {
     TextView tvWeatherInfo, tvWeatherRecommend;
     Button btnRandom;
     RequestQueue queue;
+    LinearLayout layoutRecommend;
     private FusedLocationProviderClient fusedLocationClient;
     private final String API_KEY = "b173bcdd6617f3a5dc76e5136f9ba1c0";
     private double userLat = 37.5501;
     private double userLon = 126.9237;
 
-    // 기분 정보 저장용
-    private String selectedMood;
+    private String selectedMood; // 기분 정보
 
     public RecommendFragment() {}
 
@@ -56,11 +56,15 @@ public class RecommendFragment extends Fragment {
         tvWeatherInfo = v.findViewById(R.id.tv_weather_info);
         tvWeatherRecommend = v.findViewById(R.id.tv_weather_recommend);
         btnRandom = v.findViewById(R.id.btn_random_exercise);
-        queue = Volley.newRequestQueue(requireContext());
+        layoutRecommend = v.findViewById(R.id.layout_recommend);
 
+        // 🔥 초기 상태: 텍스트만 로딩중 표시
+        tvWeatherInfo.setText("날씨 정보를 불러오는 중...");
+        tvWeatherRecommend.setText("잠시만 기다려 주세요!");
+
+        queue = Volley.newRequestQueue(requireContext());
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
-        // HomeFragment에서 넘어온 기분 정보 받기
         if (getArguments() != null) {
             selectedMood = getArguments().getString("selectedMood");
         }
@@ -72,11 +76,12 @@ public class RecommendFragment extends Fragment {
         return v;
     }
 
+
     private void requestLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             requestPermissions(
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
@@ -134,16 +139,49 @@ public class RecommendFragment extends Fragment {
                         ArrayList<Exercise> indoor = getIndoorExercises();
                         ArrayList<Exercise> outdoor = getOutdoorExercises();
 
+                        // UI 초기화
                         gridIndoor.removeAllViews();
                         gridOutdoor.removeAllViews();
 
-                        if (weather.equals("Rain") || weather.equals("Snow") ||
-                                weather.equals("Thunderstorm")) {
-                            addExerciseCards(gridIndoor, indoor);
-                        } else {
-                            addExerciseCards(gridIndoor, indoor);
-                            addExerciseCards(gridOutdoor, outdoor);
+                        switch (weather) {
+                            case "Clear":
+                                // 맑음 → 실외 + 실내 전체
+                                addExerciseCards(gridIndoor, indoor);
+                                addExerciseCards(gridOutdoor, outdoor);
+                                break;
+
+                            case "Clouds":
+                                // 흐림 → 산책 등 실외 기본 운동 + 실내 전체
+                                ArrayList<Exercise> cloudsOutdoor = new ArrayList<>();
+                                for (Exercise ex : outdoor) {
+                                    if (ex.name.contains("조깅") || ex.name.contains("파워워킹")) {
+                                        cloudsOutdoor.add(ex);
+                                    }
+                                }
+                                addExerciseCards(gridIndoor, indoor);
+                                addExerciseCards(gridOutdoor, cloudsOutdoor);
+                                break;
+
+                            case "Drizzle":
+                                // 이슬비 → 실내 운동만
+                                addExerciseCards(gridIndoor, indoor);
+                                break;
+
+                            case "Rain":
+                            case "Snow":
+                            case "Thunderstorm":
+                                // 위험한 날씨 → 실내 운동만
+                                addExerciseCards(gridIndoor, indoor);
+                                break;
+
+                            default:
+                                // 예외 → 실내 + 실외 전체
+                                addExerciseCards(gridIndoor, indoor);
+                                addExerciseCards(gridOutdoor, outdoor);
+                                break;
                         }
+
+                        layoutRecommend.setVisibility(View.VISIBLE);
 
                     } catch (JSONException e) {
                         Toast.makeText(requireContext(), "날씨 정보 파싱 오류", Toast.LENGTH_SHORT).show();
@@ -221,9 +259,8 @@ public class RecommendFragment extends Fragment {
             tv.setGravity(Gravity.CENTER);
             tv.setPadding(0, dpToPx(4), 0, 0);
 
-            // 핵심: 최대 두 줄, 줄바꿈 허용, ... 처리 없음
             tv.setSingleLine(false);
-            tv.setMaxLines(2);  // 또는 3
+            tv.setMaxLines(2);
             tv.setEllipsize(null);
             tv.setWidth(cardWidthPx - dpToPx(4));
 
@@ -241,8 +278,6 @@ public class RecommendFragment extends Fragment {
         return Math.round(dp * density);
     }
 
-
-    // ✅ 기분 정보만 추가로 전달
     private void openDetail(Exercise e) {
         if (!isAdded()) return;
 
@@ -251,7 +286,7 @@ public class RecommendFragment extends Fragment {
         intent.putExtra("exercise_desc", e.description != null ? e.description : "설명이 없습니다.");
         intent.putExtra("exercise_level", e.level != null ? e.level : "☆☆☆☆☆");
         intent.putExtra("exercise_icon", e.iconRes);
-        intent.putExtra("exercise_mood", selectedMood); // 기분 정보 추가
+        intent.putExtra("exercise_mood", selectedMood);
         startActivity(intent);
     }
 
