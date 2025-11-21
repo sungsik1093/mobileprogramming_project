@@ -3,6 +3,7 @@ package com.cookandroid.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_recommend) {
                 selected = new RecommendFragment();
             } else if (id == R.id.nav_cert) {
-                selected = new CertFragment();
+                // Fragment가 아닌 Activity 실행
+                Intent intent = new Intent(MainActivity.this, CertActivity.class);
+                startActivity(intent);
+                return true; // 클릭 이벤트 처리 완료
             } else if (id == R.id.nav_record) {
                 selected = new CalendarFragment();
             }
@@ -49,11 +53,5 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // 필요 시 상태 유지 로직 (예: 선택된 기분, 오늘의 운동 등)
     }
 }
