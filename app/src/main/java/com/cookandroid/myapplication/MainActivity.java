@@ -32,10 +32,18 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.nav_recommend) {
                 selected = new RecommendFragment();
             } else if (id == R.id.nav_cert) {
-                // Fragment가 아닌 Activity 실행
+
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                String mood = "보통"; // 기본값
+
+                if (currentFragment instanceof HomeFragment) {
+                    mood = ((HomeFragment) currentFragment).getSelectedMood();
+                }
+
                 Intent intent = new Intent(MainActivity.this, CertActivity.class);
+                intent.putExtra("exercise_mood", mood);
                 startActivity(intent);
-                return true; // 클릭 이벤트 처리 완료
+                return true;
             } else if (id == R.id.nav_record) {
                 selected = new CalendarFragment();
             }

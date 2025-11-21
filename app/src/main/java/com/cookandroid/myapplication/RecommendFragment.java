@@ -40,6 +40,9 @@ public class RecommendFragment extends Fragment {
     private double userLat = 37.5501;
     private double userLon = 126.9237;
 
+    // 기분 정보 저장용
+    private String selectedMood;
+
     public RecommendFragment() {}
 
     @Override
@@ -56,6 +59,11 @@ public class RecommendFragment extends Fragment {
         queue = Volley.newRequestQueue(requireContext());
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        // HomeFragment에서 넘어온 기분 정보 받기
+        if (getArguments() != null) {
+            selectedMood = getArguments().getString("selectedMood");
+        }
 
         requestLocation();
 
@@ -215,15 +223,16 @@ public class RecommendFragment extends Fragment {
         }
     }
 
+    // ✅ 기분 정보만 추가로 전달
     private void openDetail(Exercise e) {
         if (!isAdded()) return;
 
         Intent intent = new Intent(requireContext(), ExerciseDetailActivity.class);
-        // ✅ ExerciseDetailActivity와 키 일치
         intent.putExtra("exercise_name", e.name != null ? e.name : "운동명 없음");
         intent.putExtra("exercise_desc", e.description != null ? e.description : "설명이 없습니다.");
         intent.putExtra("exercise_level", e.level != null ? e.level : "☆☆☆☆☆");
         intent.putExtra("exercise_icon", e.iconRes);
+        intent.putExtra("exercise_mood", selectedMood); // 기분 정보 추가
         startActivity(intent);
     }
 

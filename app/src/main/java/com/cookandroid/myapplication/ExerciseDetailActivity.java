@@ -35,21 +35,26 @@ public class ExerciseDetailActivity extends AppCompatActivity {
         final String desc = getIntent().getStringExtra("exercise_desc");
         final String level = getIntent().getStringExtra("exercise_level");
         final int icon = getIntent().getIntExtra("exercise_icon", R.drawable.ic_plank);
+        final String mood = getIntent().getStringExtra("exercise_mood"); // 기분값 받기
+        final String date = getIntent().getStringExtra("exercise_date");
 
-        // 세팅
-        tvName.setText(name);
-        tvTitle.setText(name);
-        tvDesc.setText(desc);
+        // 화면 세팅
+        tvName.setText(name != null ? name : "운동명 없음");
+        tvTitle.setText(name != null ? name : "운동명 없음");
+        tvDesc.setText(desc != null ? desc : "설명이 없습니다.");
         ivImage.setImageResource(icon);
-        setStars(level);
 
-        // 운동 완료 버튼 클릭 시 CertActivity로 이동
+        setStars(level != null ? level : "☆☆☆☆☆");
+
+        // 운동 완료 버튼 클릭 시 CertActivity로 이동, 기분값 반드시 넘기기!
         btnStart.setOnClickListener(v -> {
             Intent intent = new Intent(ExerciseDetailActivity.this, CertActivity.class);
             intent.putExtra("exercise_name", name);
+            intent.putExtra("exercise_desc", desc);
             intent.putExtra("exercise_level", level);
             intent.putExtra("exercise_icon", icon);
-            intent.putExtra("exercise_desc", desc);
+            intent.putExtra("exercise_mood", mood); // 기분값
+            intent.putExtra("exercise_date", date);
             startActivity(intent);
         });
     }
@@ -63,11 +68,7 @@ public class ExerciseDetailActivity extends AppCompatActivity {
         for (int i = 0; i < 5; i++) {
             ImageView star = new ImageView(this);
             star.setLayoutParams(new LinearLayout.LayoutParams(50, 50));
-            if (i < filledCount) {
-                star.setImageResource(R.drawable.ic_star_filled);
-            } else {
-                star.setImageResource(R.drawable.ic_star_empty);
-            }
+            star.setImageResource(i < filledCount ? R.drawable.ic_star_filled : R.drawable.ic_star_empty);
             layoutStars.addView(star);
         }
     }
