@@ -3,8 +3,8 @@ package com.cookandroid.myapplication;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,12 +35,9 @@ public class RecommendFragment extends Fragment {
     TextView tvWeatherInfo, tvWeatherRecommend;
     Button btnRandom;
     RequestQueue queue;
-
     private FusedLocationProviderClient fusedLocationClient;
-
     private final String API_KEY = "b173bcdd6617f3a5dc76e5136f9ba1c0";
-
-    private double userLat = 37.5501;   // 기본값 (명지대)
+    private double userLat = 37.5501;
     private double userLon = 126.9237;
 
     public RecommendFragment() {}
@@ -56,22 +53,21 @@ public class RecommendFragment extends Fragment {
         tvWeatherInfo = v.findViewById(R.id.tv_weather_info);
         tvWeatherRecommend = v.findViewById(R.id.tv_weather_recommend);
         btnRandom = v.findViewById(R.id.btn_random_exercise);
-        queue = Volley.newRequestQueue(getContext());
+        queue = Volley.newRequestQueue(requireContext());
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
-        requestLocation();  // 🔥 현재 위치 요청 후 날씨 조회 진행
+        requestLocation();
 
         btnRandom.setOnClickListener(view -> recommendRandom());
 
         return v;
     }
 
-    /** 🔥 위치 권한 요청 + 현재 위치 가져오기 */
     private void requestLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(),
+        if (ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(),
+                && ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             requestPermissions(
@@ -86,11 +82,10 @@ public class RecommendFragment extends Fragment {
                 userLat = location.getLatitude();
                 userLon = location.getLongitude();
             }
-            fetchWeather(); // 위치 얻은 후 날씨 API 호출
+            fetchWeather();
         });
     }
 
-    /** 🔥 권한 요청 결과 */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions,
@@ -98,21 +93,17 @@ public class RecommendFragment extends Fragment {
         if (requestCode == 1000) {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                 requestLocation();
             } else {
-                Toast.makeText(getContext(),
+                Toast.makeText(requireContext(),
                         "위치 권한이 필요합니다. 기본 위치를 사용합니다.",
                         Toast.LENGTH_SHORT).show();
-
                 fetchWeather();
             }
         }
     }
 
-    /** 🔥 날씨 API 호출 */
     private void fetchWeather() {
-
         String url = String.format(
                 "https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric&appid=%s",
                 userLat, userLon, API_KEY
@@ -127,40 +118,35 @@ public class RecommendFragment extends Fragment {
 
                         double temp = response.getJSONObject("main").getDouble("temp");
 
-                        // 🔥 텍스트뷰 업데이트
                         tvWeatherInfo.setText(String.format("현재 %.1f℃ · %s",
                                 temp, translateWeather(weather)));
 
                         tvWeatherRecommend.setText(getRecommendMessage(weather));
 
-                        // 운동 데이터 로드
                         ArrayList<Exercise> indoor = getIndoorExercises();
                         ArrayList<Exercise> outdoor = getOutdoorExercises();
 
                         gridIndoor.removeAllViews();
                         gridOutdoor.removeAllViews();
 
-                        // 비/눈이면 실내만 표시
                         if (weather.equals("Rain") || weather.equals("Snow") ||
                                 weather.equals("Thunderstorm")) {
                             addExerciseCards(gridIndoor, indoor);
-
                         } else {
                             addExerciseCards(gridIndoor, indoor);
                             addExerciseCards(gridOutdoor, outdoor);
                         }
 
                     } catch (JSONException e) {
-                        Toast.makeText(getContext(), "날씨 정보 파싱 오류", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), "날씨 정보 파싱 오류", Toast.LENGTH_SHORT).show();
                     }
                 },
-                error -> Toast.makeText(getContext(), "날씨 API 오류", Toast.LENGTH_SHORT).show()
+                error -> Toast.makeText(requireContext(), "날씨 API 오류", Toast.LENGTH_SHORT).show()
         );
 
         queue.add(request);
     }
 
-    /** 🔥 영어 날씨 → 한글 번역 */
     private String translateWeather(String w) {
         switch (w) {
             case "Clear": return "맑음";
@@ -173,45 +159,35 @@ public class RecommendFragment extends Fragment {
         }
     }
 
-    /** 🔥 날씨별 운동 추천 문구 */
     private String getRecommendMessage(String weather) {
         switch (weather) {
-            case "Clear":
-                return "날씨가 좋아요! 가벼운 조깅이나 야외 운동 어때요?";
-            case "Clouds":
-                return "흐린 날엔 산책이나 실내 운동이 좋아요!";
-            case "Rain":
-                return "비가 와요. 실내에서 코어 운동이나 스트레칭을 추천해요!";
-            case "Snow":
-                return "눈 오는 날엔 미끄러울 수 있어요. 실내 운동을 권장해요!";
-            case "Drizzle":
-                return "이슬비가 내려요. 가볍게 실내 운동을 해보세요!";
-            case "Thunderstorm":
-                return "⚡ 위험한 날씨! 반드시 실내 운동하세요!";
-            default:
-                return "오늘은 컨디션에 맞는 운동을 선택해보세요!";
+            case "Clear": return "날씨가 좋아요! 가벼운 조깅이나 야외 운동 어때요?";
+            case "Clouds": return "흐린 날엔 산책이나 실내 운동이 좋아요!";
+            case "Rain": return "비가 와요. 실내에서 코어 운동이나 스트레칭을 추천해요!";
+            case "Snow": return "눈 오는 날엔 미끄러울 수 있어요. 실내 운동을 권장해요!";
+            case "Drizzle": return "이슬비가 내려요. 가볍게 실내 운동을 해보세요!";
+            case "Thunderstorm": return "⚡ 위험한 날씨! 반드시 실내 운동하세요!";
+            default: return "오늘은 컨디션에 맞는 운동을 선택해보세요!";
         }
     }
 
-    /** 🔥 랜덤 운동 추천 */
     private void recommendRandom() {
         ArrayList<Exercise> all = new ArrayList<>();
         all.addAll(getIndoorExercises());
         all.addAll(getOutdoorExercises());
 
-        if (!all.isEmpty()) {
+        if (!all.isEmpty() && isAdded()) {
             int index = (int) (Math.random() * all.size());
             openDetail(all.get(index));
         }
     }
 
-    /** 🔥 운동 카드 UI 생성 */
     private void addExerciseCards(GridLayout grid, ArrayList<Exercise> exercises) {
         for (Exercise ex : exercises) {
-            LinearLayout card = new LinearLayout(getContext());
+            LinearLayout card = new LinearLayout(requireContext());
             card.setOrientation(LinearLayout.VERTICAL);
             card.setPadding(20, 20, 20, 20);
-            card.setGravity(android.view.Gravity.CENTER);
+            card.setGravity(Gravity.CENTER);
             card.setBackgroundResource(R.drawable.bg_exercise_card);
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
@@ -220,12 +196,12 @@ public class RecommendFragment extends Fragment {
             params.setMargins(16, 16, 16, 16);
             card.setLayoutParams(params);
 
-            ImageView iv = new ImageView(getContext());
-            iv.setImageResource(ex.iconRes);
+            ImageView iv = new ImageView(requireContext());
+            if (ex.iconRes != 0) iv.setImageResource(ex.iconRes);
             iv.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
 
-            TextView tv = new TextView(getContext());
-            tv.setText(ex.name);
+            TextView tv = new TextView(requireContext());
+            tv.setText(ex.name != null ? ex.name : "운동명 없음");
             tv.setTextColor(0xFF111827);
             tv.setTextSize(16);
             tv.setPadding(0, 10, 0, 0);
@@ -239,17 +215,18 @@ public class RecommendFragment extends Fragment {
         }
     }
 
-    /** 🔥 운동 상세 화면 이동 */
     private void openDetail(Exercise e) {
-        Intent intent = new Intent(getContext(), ExerciseDetailActivity.class);
-        intent.putExtra("name", e.name);
-        intent.putExtra("desc", e.description);
-        intent.putExtra("level", e.level);
-        intent.putExtra("icon", e.iconRes);
+        if (!isAdded()) return;
+
+        Intent intent = new Intent(requireContext(), ExerciseDetailActivity.class);
+        // ✅ ExerciseDetailActivity와 키 일치
+        intent.putExtra("exercise_name", e.name != null ? e.name : "운동명 없음");
+        intent.putExtra("exercise_desc", e.description != null ? e.description : "설명이 없습니다.");
+        intent.putExtra("exercise_level", e.level != null ? e.level : "☆☆☆☆☆");
+        intent.putExtra("exercise_icon", e.iconRes);
         startActivity(intent);
     }
 
-    /** 🔥 운동 데이터 세트 */
     private ArrayList<Exercise> getIndoorExercises() {
         ArrayList<Exercise> list = new ArrayList<>();
         list.add(new Exercise("스쿼트", "하체 강화, 체지방 감소", "★★☆", R.drawable.ic_squat));

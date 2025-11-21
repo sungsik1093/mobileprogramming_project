@@ -1,7 +1,9 @@
 package com.cookandroid.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,6 +13,7 @@ public class ExerciseDetailActivity extends AppCompatActivity {
     TextView tvName, tvDesc, tvTitle;
     ImageView ivImage;
     LinearLayout layoutStars;
+    Button btnStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,43 +25,49 @@ public class ExerciseDetailActivity extends AppCompatActivity {
         tvTitle = findViewById(R.id.tv_title);
         ivImage = findViewById(R.id.iv_exercise_image);
         layoutStars = findViewById(R.id.layout_stars);
+        btnStart = findViewById(R.id.btn_start_exercise);
+
+        ImageView btnBack = findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(v -> finish());
 
         // 전달받은 값
-        String name = getIntent().getStringExtra("name");
-        String desc = getIntent().getStringExtra("desc");
-        String level = getIntent().getStringExtra("level");   // ex: "★★☆"
-        int icon = getIntent().getIntExtra("icon", 0);
+        final String name = getIntent().getStringExtra("exercise_name");
+        final String desc = getIntent().getStringExtra("exercise_desc");
+        final String level = getIntent().getStringExtra("exercise_level");
+        final int icon = getIntent().getIntExtra("exercise_icon", R.drawable.ic_plank);
 
         // 세팅
         tvName.setText(name);
         tvTitle.setText(name);
-        ivImage.setImageResource(icon);
         tvDesc.setText(desc);
-
-        // 별 생성
+        ivImage.setImageResource(icon);
         setStars(level);
+
+        // 운동 완료 버튼 클릭 시 CertActivity로 이동
+        btnStart.setOnClickListener(v -> {
+            Intent intent = new Intent(ExerciseDetailActivity.this, CertActivity.class);
+            intent.putExtra("exercise_name", name);
+            intent.putExtra("exercise_level", level);
+            intent.putExtra("exercise_icon", icon);
+            intent.putExtra("exercise_desc", desc);
+            startActivity(intent);
+        });
     }
 
     private void setStars(String level) {
-        layoutStars.removeAllViews(); // 초기화
-
+        layoutStars.removeAllViews();
         int filledCount = 0;
-
-        // ★★☆ 형태 해석
         for (char c : level.toCharArray()) {
             if (c == '★') filledCount++;
         }
-
         for (int i = 0; i < 5; i++) {
             ImageView star = new ImageView(this);
             star.setLayoutParams(new LinearLayout.LayoutParams(50, 50));
-
             if (i < filledCount) {
                 star.setImageResource(R.drawable.ic_star_filled);
             } else {
                 star.setImageResource(R.drawable.ic_star_empty);
             }
-
             layoutStars.addView(star);
         }
     }
