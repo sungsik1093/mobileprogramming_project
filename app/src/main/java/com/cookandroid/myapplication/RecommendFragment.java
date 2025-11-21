@@ -191,28 +191,41 @@ public class RecommendFragment extends Fragment {
     }
 
     private void addExerciseCards(GridLayout grid, ArrayList<Exercise> exercises) {
+        int cardWidthPx = dpToPx(110);
+        int cardHeightPx = dpToPx(135);
+        int imageSizePx = dpToPx(52);
+
         for (Exercise ex : exercises) {
             LinearLayout card = new LinearLayout(requireContext());
             card.setOrientation(LinearLayout.VERTICAL);
-            card.setPadding(20, 20, 20, 20);
-            card.setGravity(Gravity.CENTER);
+            card.setPadding(dpToPx(2), dpToPx(2), dpToPx(2), dpToPx(2));
+            card.setGravity(Gravity.CENTER_HORIZONTAL);
             card.setBackgroundResource(R.drawable.bg_exercise_card);
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.width = 0;
-            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-            params.setMargins(16, 16, 16, 16);
+            params.width = cardWidthPx;
+            params.height = cardHeightPx;
+            params.setMargins(dpToPx(7), dpToPx(7), dpToPx(7), dpToPx(7));
             card.setLayoutParams(params);
 
             ImageView iv = new ImageView(requireContext());
             if (ex.iconRes != 0) iv.setImageResource(ex.iconRes);
-            iv.setLayoutParams(new LinearLayout.LayoutParams(100, 100));
+            LinearLayout.LayoutParams imageParams = new LinearLayout.LayoutParams(imageSizePx, imageSizePx);
+            imageParams.gravity = Gravity.CENTER_HORIZONTAL;
+            iv.setLayoutParams(imageParams);
 
             TextView tv = new TextView(requireContext());
             tv.setText(ex.name != null ? ex.name : "운동명 없음");
             tv.setTextColor(0xFF111827);
-            tv.setTextSize(16);
-            tv.setPadding(0, 10, 0, 0);
+            tv.setTextSize(15);
+            tv.setGravity(Gravity.CENTER);
+            tv.setPadding(0, dpToPx(4), 0, 0);
+
+            // 핵심: 최대 두 줄, 줄바꿈 허용, ... 처리 없음
+            tv.setSingleLine(false);
+            tv.setMaxLines(2);  // 또는 3
+            tv.setEllipsize(null);
+            tv.setWidth(cardWidthPx - dpToPx(4));
 
             card.addView(iv);
             card.addView(tv);
@@ -222,6 +235,12 @@ public class RecommendFragment extends Fragment {
             grid.addView(card);
         }
     }
+
+    private int dpToPx(int dp) {
+        float density = requireContext().getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
 
     // ✅ 기분 정보만 추가로 전달
     private void openDetail(Exercise e) {
@@ -238,27 +257,84 @@ public class RecommendFragment extends Fragment {
 
     private ArrayList<Exercise> getIndoorExercises() {
         ArrayList<Exercise> list = new ArrayList<>();
-        list.add(new Exercise("스쿼트", "하체 강화, 체지방 감소", "★★☆", R.drawable.ic_squat));
-        list.add(new Exercise("플랭크", "코어 근육 강화", "★★☆", R.drawable.ic_plank));
-        list.add(new Exercise("버피 테스트", "전신 운동, 칼로리 소모 높음", "★★★☆", R.drawable.ic_burpee));
-        list.add(new Exercise("런지", "하체 집중, 균형감 개선", "★★☆", R.drawable.ic_lunge));
-        list.add(new Exercise("점핑잭", "유산소 + 심박수 상승", "★★☆", R.drawable.ic_jumpingjack));
-        list.add(new Exercise("크런치", "복근 운동", "★☆☆", R.drawable.ic_crunch));
-        list.add(new Exercise("힙브릿지", "둔근 강화, 허리 지지", "★☆☆", R.drawable.ic_hipbridge));
+        list.add(new Exercise(
+                "스쿼트",
+                "하체 강화, 체지방 감소\n\n[방법] 다리를 어깨너비로 벌리고, 무릎과 엉덩이를 뒤로 빼며 앉았다가 일어섭니다. 허리는 곧게 펴고 무릎이 발끝을 넘지 않게!",
+                "★★★☆☆", R.drawable.ic_squat));          // (3/5)
+
+        list.add(new Exercise(
+                "플랭크",
+                "코어 근육 강화\n\n[방법] 팔꿈치를 어깨 아래 두고, 몸을 일직선으로 유지해 30~60초 버팁니다. 엉덩이가 올라가거나 허리가 꺾이지 않게 유지하세요.",
+                "★★★☆☆", R.drawable.ic_plank));          // (3/5)
+
+        list.add(new Exercise(
+                "버피\n테스트",
+                "전신 운동, 칼로리 소모 높음\n\n[방법] 완전히 서있는 자세 → 스쿼트 → 팔꿈치 짚고 점프 → 푸시업 → 다시 일어서서 점프! 연속 반복.",
+                "★★★★☆", R.drawable.ic_burpee));         // (4/5)
+
+        list.add(new Exercise(
+                "런지",
+                "하체 집중, 균형감 개선\n\n[방법] 한 발을 앞으로 내딛고 무릎을 90도로 굽혀 앉았다 일어섭니다. 좌우 번갈아 실시, 무릎이 발끝을 넘지 않게!",
+                "★★★☆☆", R.drawable.ic_lunge));           // (3/5)
+
+        list.add(new Exercise(
+                "점핑잭",
+                "유산소 + 심박수 상승\n\n[방법] 두 발을 모으고 서있다 다리를 벌리고 팔을 들어 점프! 팔과 다리를 동시에 양옆으로 벌리고 모으는 동작 반복.",
+                "★★★☆☆", R.drawable.ic_jumpingjack));      // (3/5)
+
+        list.add(new Exercise(
+                "크런치",
+                "복근 운동\n\n[방법] 무릎을 세우고 누운 다음, 복부 힘으로 어깨를 들어올립니다. 허리를 완전히 들지 않고, 복근만 자극.",
+                "★★☆☆☆", R.drawable.ic_crunch));          // (2/5)
+
+        list.add(new Exercise(
+                "힙브릿지",
+                "둔근 강화, 허리 지지\n\n[방법] 무릎을 구부리고 누워 엉덩이를 들어올립니다. 등-무릎 일직선, 엉덩이와 허리 힘으로 천천히 올렸다 내립니다.",
+                "★★☆☆☆", R.drawable.ic_hipbridge));        // (2/5)
+
         return list;
     }
 
     private ArrayList<Exercise> getOutdoorExercises() {
         ArrayList<Exercise> list = new ArrayList<>();
-        list.add(new Exercise("조깅", "전신 유산소, 체력 향상", "★★☆", R.drawable.ic_jogging));
-        list.add(new Exercise("파워워킹", "누구나 가능한 유산소 운동", "★☆☆", R.drawable.ic_powerwalk));
-        list.add(new Exercise("자전거", "하체 강화, 지속적 유산소", "★★☆", R.drawable.ic_cycling));
-        list.add(new Exercise("등산", "근지구력 향상", "★★★☆", R.drawable.ic_hiking));
-        list.add(new Exercise("줄넘기", "고효율 유산소, 칼로리 소모", "★★★☆", R.drawable.ic_jumprope));
-        list.add(new Exercise("야외 스트레칭", "가볍게 시작하기 좋음", "★☆☆", R.drawable.ic_stretching));
-        list.add(new Exercise("공원 스포츠", "재미 + 유산소 + 협응", "★★☆", R.drawable.ic_sports));
+        list.add(new Exercise(
+                "조깅",
+                "전신 유산소, 체력 향상\n\n[방법] 리듬 있게 천천히 달리면서, 시선은 정면, 어깨와 팔은 편안하게!",
+                "★★★☆☆", R.drawable.ic_jogging));             // (3/5)
+
+        list.add(new Exercise(
+                "파워워킹",
+                "누구나 가능한 유산소 운동\n\n[방법] 빠르게 걷기. 팔을 가볍게 흔들며, 발뒤꿈치부터 착지해서 전진하세요.",
+                "★★☆☆☆", R.drawable.ic_powerwalk));           // (2/5)
+
+        list.add(new Exercise(
+                "자전거",
+                "하체 강화, 지속적 유산소\n\n[방법] 안장 높이를 체형에 맞추고, 페달을 일정한 리듬으로 계속 밟으세요. 바른 자세 유지!",
+                "★★★☆☆", R.drawable.ic_cycling));              // (3/5)
+
+        list.add(new Exercise(
+                "등산",
+                "근지구력 향상\n\n[방법] 등산화 착용, 등산 스틱 활용. 한 걸음씩 착실히 걷고, 경사에서는 무릎에 충격이 가지 않게 주의!",
+                "★★★★☆", R.drawable.ic_hiking));               // (4/5)
+
+        list.add(new Exercise(
+                "줄넘기",
+                "고효율 유산소, 칼로리 소모\n\n[방법] 양손에 줄을 쥐고 규칙적으로 점프. 무릎은 약간 굽히고, 발 앞부분만 착지!",
+                "★★★★☆", R.drawable.ic_jumprope));              // (4/5)
+
+        list.add(new Exercise(
+                "야외\n스트레칭",
+                "가볍게 시작하기 좋음\n\n[방법] 목·어깨·팔·허리·다리 등 부위별로 천천히 늘리고, 깊게 숨 쉬면서 10~30초 유지합니다.",
+                "★★☆☆☆", R.drawable.ic_stretching));            // (2/5)
+
+        list.add(new Exercise(
+                "공원\n스포츠",
+                "재미 + 유산소 + 협응\n\n[방법] 농구, 배드민턴, 축구, 피구 등 야외 스포츠를 10분 이상 즐겨 운동 효과 업!",
+                "★★★☆☆", R.drawable.ic_sports));                 // (3/5)
+
         return list;
     }
+
 
     class Exercise {
         String name;
