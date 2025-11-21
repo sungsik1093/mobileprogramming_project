@@ -12,11 +12,12 @@ public class CertActivity extends AppCompatActivity {
     ImageView ivPreview;
     TextView tvOverlayDate, tvOverlayInfo, tvOverlayLabel, tvResult;
     EditText etMemo;
+    Button btnTakePhoto, btnSave, btnShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_cert); // xml 그대로 사용
+        setContentView(R.layout.fragment_cert);
 
         ivPreview = findViewById(R.id.iv_photo_preview);
         tvOverlayDate = findViewById(R.id.tv_overlay_date);
@@ -25,28 +26,40 @@ public class CertActivity extends AppCompatActivity {
         tvResult = findViewById(R.id.tv_save_result);
         etMemo = findViewById(R.id.et_today_memo);
 
-        Button btnTakePhoto = findViewById(R.id.btn_take_photo);
-        Button btnSave = findViewById(R.id.btn_save_record);
-        Button btnShare = findViewById(R.id.btn_share_mate);
+        btnTakePhoto = findViewById(R.id.btn_take_photo);
+        btnSave = findViewById(R.id.btn_save_record);
+        btnShare = findViewById(R.id.btn_share_mate);
 
-        // Intent로 전달받은 값
-        String name = getIntent().getStringExtra("exercise_name");
-        String level = getIntent().getStringExtra("exercise_level");
-        int icon = getIntent().getIntExtra("exercise_icon", R.drawable.ic_plank);
+        // 운동 정보 받기(기분 포함)
+        final String name = getIntent().getStringExtra("exercise_name");
+        final String desc = getIntent().getStringExtra("exercise_desc");
+        final String level = getIntent().getStringExtra("exercise_level");
+        final int icon = getIntent().getIntExtra("exercise_icon", R.drawable.ic_plank);
+        final String mood = getIntent().getStringExtra("exercise_mood");
+        final String date = getIntent().getStringExtra("exercise_date");
 
-        // 화면 표시
-        tvOverlayInfo.setText(name + " · 난이도 " + level + " · 기분 😊");
+        String moodEmoji = convertMoodToEmoji(mood);
+        String levelStar = (level != null) ? level : "☆☆☆";
+        String infoText = name + " · 난이도 " + levelStar + " · 기분 " + moodEmoji;
+
+        ivPreview.setImageResource(icon); // 운동 이미지
         tvOverlayLabel.setText("오운완!");
-        ivPreview.setImageResource(icon);
+        tvOverlayDate.setText(date != null ? date : "2025-11-21");
+        tvOverlayInfo.setText(infoText); // 기분 이모지까지 표시
 
-        // 버튼 기능
         btnTakePhoto.setOnClickListener(v -> ivPreview.setImageResource(icon));
-
-        btnSave.setOnClickListener(v -> {
-            String memo = etMemo.getText().toString();
-            tvResult.setText("오늘의 기록이 저장되었습니다! \n메모: " + memo);
-        });
-
+        btnSave.setOnClickListener(v -> tvResult.setText("오늘의 기록이 저장되었습니다!"));
         btnShare.setOnClickListener(v -> tvResult.setText("운동 메이트에게 인증을 보냈습니다! ✨"));
     }
+
+    private String convertMoodToEmoji(String mood) {
+        if (mood == null) return "😐"; // 선택되지 않은 경우 보통
+        switch (mood) {
+            case "좋음": return "😊";
+            case "보통": return "😐";
+            case "별로": return "😡";
+        }
+        return "😐";
+    }
+
 }
