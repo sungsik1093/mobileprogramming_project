@@ -104,20 +104,19 @@ public class CertActivity extends AppCompatActivity {
     // 카메라 실행
     private void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
         if (intent.resolveActivity(getPackageManager()) != null) {
             try {
+                // 1. createImageFile()에서 currentPhotoPath 저장됨
                 photoFile = createImageFile();
-
-                Uri photoUri = FileProvider.getUriForFile(
-                        this,
-                        getPackageName() + ".provider",
-                        photoFile
-                );
-
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                cameraLauncher.launch(intent);
-
+                if (photoFile != null) {
+                    Uri photoUri = FileProvider.getUriForFile(
+                            this,
+                            getPackageName() + ".provider", // authority: 반드시 Manifest/paths와 일치
+                            photoFile
+                    );
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                    cameraLauncher.launch(intent);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 Toast.makeText(this, "사진 파일 생성 실패", Toast.LENGTH_SHORT).show();
@@ -133,11 +132,15 @@ public class CertActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
-                        if (bitmap != null) {
-                            ivPreview.setImageBitmap(bitmap);
+                        if (currentPhotoPath != null) {
+                            Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+                            if (bitmap != null) {
+                                ivPreview.setImageBitmap(bitmap);
+                            } else {
+                                Toast.makeText(this, "사진 로드 실패", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
-                            Toast.makeText(this, "사진 로드 실패", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "사진 경로 오류", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
