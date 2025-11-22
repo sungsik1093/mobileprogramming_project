@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,15 +70,24 @@ public class HomeFragment extends Fragment {
         moodBad.setOnClickListener(moodClickListener);
 
         btnGoWorkout.setOnClickListener(view -> {
+            if (selectedMood == null) {
+                // 기분을 선택하지 않은 경우 → 이동 막기 + 안내 표시
+                Toast.makeText(getContext(), "기분을 먼저 선택해주세요 😊", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 기분 선택한 경우 → RecommendFragment 이동
             RecommendFragment fragment = new RecommendFragment();
             Bundle bundle = new Bundle();
             bundle.putString("selectedMood", selectedMood);
             fragment.setArguments(bundle);
+
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, fragment)
                     .commit();
         });
+
 
         showTodayExercise();
         return v;
