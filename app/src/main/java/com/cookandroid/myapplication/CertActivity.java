@@ -1,7 +1,9 @@
 package com.cookandroid.myapplication;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -36,6 +38,12 @@ public class CertActivity extends AppCompatActivity {
     private TextView tvOverlayDate, tvOverlayInfo, tvOverlayLabel, tvResult;
     private EditText etMemo;
     private Button btnTakePhoto, btnSave, btnShare;
+
+    private DBHelper dbHelper;
+    private String currentExerciseName;
+    private String currentLevel;
+    private String currentMood;
+    private String currentDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,16 +80,24 @@ public class CertActivity extends AppCompatActivity {
         tvOverlayDate.setText(date != null ? date : new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         tvOverlayInfo.setText(infoText);
 
+        // DB 저장을 위해 클래스 멤버 변수 값에 저장
+        currentExerciseName = (name != null) ? name : "운동";
+        currentLevel = (level != null) ? level : "☆☆☆";
+        currentMood = (mood != null) ? mood : "보통";
+        currentDate = (date != null) ? date : new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
         // 카메라 권한 및 결과 처리 세팅
         setupPermissionLauncher();
         setupCameraLauncher();
+
+        // db 헬퍼 초기화
+        dbHelper = new DBHelper(this);
 
         // 버튼 클릭 이벤트
         btnTakePhoto.setOnClickListener(v -> permissionLauncher.launch(android.Manifest.permission.CAMERA));
 
         btnSave.setOnClickListener(v -> {
-            String memo = etMemo.getText().toString();
-            tvResult.setText("오늘의 기록이 저장되었습니다! \n메모: " + memo);
+            saveRecordToDatabase();
         });
 
         btnShare.setOnClickListener(v -> tvResult.setText("운동 메이트에게 인증을 보냈습니다! ✨"));
@@ -167,5 +183,47 @@ public class CertActivity extends AppCompatActivity {
             case "별로": return "😡";
         }
         return "😐";
+    }
+
+    // 기록 저장
+    private void saveRecordToDatabase() {
+        String memo = etMemo.getText().toString();
+
+        if (currentPhotoPath == null) {
+            Toast.makeText(this, "사진을 먼저 촬영해주세요!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Record record = new Record(
+          currentExerciseName, currentDate, currentPhotoPath, currentLevel, currentMood, memo
+        );
+
+        long resultId = insertRecord(record);
+
+        // 저장 결과 표시
+        if (resultId > 0) {
+            tvResult.setText("오늘의 기록이 저장되었습니다!");
+        } else {
+            tvResult.setText("기록 저장 실패. 다시 시도해주세요.");
+        }
+
+
+    }
+
+    private long insertRecord(Record record) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(DBHelper.COLUMN_NAME, record.getName());
+        values.put(DBHelper.COLUMN_DATE, record.getDate());
+        values.put(DBHelper.COLUMN_PHOTO, record.getPhotoPath());
+        values.put(DBHelper.COLUMN_LEVEL, record.getLevel());
+        values.put(DBHelper.COLUMN_MOOD, record.getMood());
+        values.put(DBHelper.COLUMN_MEMO, record.getMemo());
+        values.put(DBHelper.COLUMN_TIMESTAMP, record.getTimestamp());
+
+        long newRowId = db.insert(DBHelper.TABLE_NAME, null, values);
+
+        return newRowId;
     }
 }
