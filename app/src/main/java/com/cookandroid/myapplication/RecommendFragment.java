@@ -43,7 +43,8 @@ public class RecommendFragment extends Fragment {
 
     private String selectedMood; // 기분 정보
 
-    public RecommendFragment() {}
+    public RecommendFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -195,25 +196,39 @@ public class RecommendFragment extends Fragment {
 
     private String translateWeather(String w) {
         switch (w) {
-            case "Clear": return "맑음";
-            case "Clouds": return "흐림";
-            case "Rain": return "비";
-            case "Snow": return "눈";
-            case "Drizzle": return "이슬비";
-            case "Thunderstorm": return "천둥번개";
-            default: return w;
+            case "Clear":
+                return "맑음";
+            case "Clouds":
+                return "흐림";
+            case "Rain":
+                return "비";
+            case "Snow":
+                return "눈";
+            case "Drizzle":
+                return "이슬비";
+            case "Thunderstorm":
+                return "천둥번개";
+            default:
+                return w;
         }
     }
 
     private String getRecommendMessage(String weather) {
         switch (weather) {
-            case "Clear": return "날씨가 좋아요! 가벼운 조깅이나 야외 운동 어때요?";
-            case "Clouds": return "흐린 날엔 산책이나 실내 운동이 좋아요!";
-            case "Rain": return "비가 와요. 실내에서 코어 운동이나 스트레칭을 추천해요!";
-            case "Snow": return "눈 오는 날엔 미끄러울 수 있어요. 실내 운동을 권장해요!";
-            case "Drizzle": return "이슬비가 내려요. 가볍게 실내 운동을 해보세요!";
-            case "Thunderstorm": return "⚡ 위험한 날씨! 반드시 실내 운동하세요!";
-            default: return "오늘은 컨디션에 맞는 운동을 선택해보세요!";
+            case "Clear":
+                return "날씨가 좋아요! 가벼운 조깅이나 야외 운동 어때요?";
+            case "Clouds":
+                return "흐린 날엔 산책이나 실내 운동이 좋아요!";
+            case "Rain":
+                return "비가 와요. 실내에서 코어 운동이나 스트레칭을 추천해요!";
+            case "Snow":
+                return "눈 오는 날엔 미끄러울 수 있어요. 실내 운동을 권장해요!";
+            case "Drizzle":
+                return "이슬비가 내려요. 가볍게 실내 운동을 해보세요!";
+            case "Thunderstorm":
+                return "⚡ 위험한 날씨! 반드시 실내 운동하세요!";
+            default:
+                return "오늘은 컨디션에 맞는 운동을 선택해보세요!";
         }
     }
 
@@ -347,6 +362,47 @@ public class RecommendFragment extends Fragment {
                 "둔근 강화, 허리 지지\n\n[방법] 무릎을 구부리고 누워 엉덩이를 들어올립니다. 등-무릎 일직선, 엉덩이와 허리 힘으로 천천히 올렸다 내립니다.",
                 "★★☆☆☆", R.drawable.ic_hipbridge));        // (2/5)
 
+        list.add(new Exercise(
+                "푸시업",
+                "상체 강화, 팔·가슴·삼두 자극\n\n[방법] 손은 어깨너비, 몸은 일직선. 팔을 굽혀 가슴이 바닥 가까이 갈 때까지 내렸다가 밀어올립니다.",
+                "★★★☆☆", R.drawable.ic_pushup));
+
+        list.add(new Exercise(
+                "레그레이즈",
+                "복근 하부 강화\n\n[방법] 등을 대고 눕고 다리를 곧게 올렸다가 천천히 내립니다. 허리가 뜨지 않도록 조심!",
+                "★★★☆☆", R.drawable.ic_legraise));
+
+        list.add(new Exercise(
+                "사이드\n플랭크",
+                "옆구리·코어 강화\n\n[방법] 팔꿈치로 몸을 지탱하고 몸을 일직선으로 유지합니다. 좌우 20~40초 유지!",
+                "★★★☆☆", R.drawable.ic_sideplank));
+
+        list.add(new Exercise(
+                "마운틴\n클라이머",
+                "전신 유산소 + 복근 자극\n\n[방법] 푸시업 자세에서 무릎을 번갈아 빠르게 가슴 쪽으로 끌어옵니다.",
+                "★★★★☆", R.drawable.ic_mountain));
+
+        list.add(new Exercise(
+                "브이업",
+                "전신 복근 운동\n\n[방법] 누워서 팔과 다리를 동시에 들어올려 V자 형태로 몸을 접습니다.",
+                "★★★★☆", R.drawable.ic_vup));
+
+        list.add(new Exercise(
+                "암워킹",
+                "어깨·코어 강화\n\n[방법] 허리를 굽혀 손으로 바닥을 짚고 천천히 앞으로 걸어 푸시업 자세까지 이동 후 다시 돌아옵니다.",
+                "★★★☆☆", R.drawable.ic_armwalking));
+
+        list.add(new Exercise(
+                "데드버그",
+                "코어 안정성 강화\n\n[방법] 누워서 반대 팔·다리를 동시에 들어 천천히 교차로 움직입니다.",
+                "★★☆☆☆", R.drawable.ic_deadbug));
+
+        list.add(new Exercise(
+                "버드독",
+                "척추 안정성 & 코어 강화\n\n[방법] 네발 기기 자세에서 반대 팔·다리를 천천히 뻗어 유지합니다.",
+                "★★☆☆☆", R.drawable.ic_birddog));
+
+
         return list;
     }
 
@@ -383,9 +439,55 @@ public class RecommendFragment extends Fragment {
                 "★★☆☆☆", R.drawable.ic_stretching));            // (2/5)
 
         list.add(new Exercise(
-                "공원\n스포츠",
-                "재미 + 유산소 + 협응\n\n[방법] 농구, 배드민턴, 축구, 피구 등 야외 스포츠를 10분 이상 즐겨 운동 효과 업!",
-                "★★★☆☆", R.drawable.ic_sports));                 // (3/5)
+                "인터벌\n러닝",
+                "체지방 감량, 심폐지구력 효과 최고\n\n[방법] 전력질주 30초 + 천천히 걷기 1분을 반복합니다.",
+                "★★★★★", R.drawable.ic_intervalrun));
+
+        list.add(new Exercise(
+                "언덕 걷기",
+                "하체 근지구력 향상\n\n[방법] 경사진 길을 일정한 속도로 꾸준히 올라갑니다. 무릎 충격 주의!",
+                "★★★☆☆", R.drawable.ic_hillwalking));
+
+        list.add(new Exercise(
+                "계단 오르기",
+                "하체 근력 강화 + 유산소\n\n[방법] 계단을 규칙적으로 오르내립니다. 무릎은 살짝 굽히고 천천히.",
+                "★★★★☆", R.drawable.ic_stair));
+
+        list.add(new Exercise(
+                "걷기 런지",
+                "하체 근력 + 균형감 향상\n\n[방법] 한 발씩 앞으로 내딛으며 런지 자세를 유지합니다. 무릎이 발끝을 넘지 않도록 주의!",
+                "★★★☆☆",
+                R.drawable.ic_walkinglunge));
+
+        list.add(new Exercise(
+                "스프린트",
+                "폭발력·심폐지구력 강화\n\n[방법] 10~20초 전력질주 후 40초 천천히 걷기를 반복합니다.",
+                "★★★★★",
+                R.drawable.ic_sprint));
+
+        list.add(new Exercise(
+                "메디신볼\n던지기",
+                "상체 파워·협응력 향상\n\n[방법] 볼을 앞 또는 위로 던지며 전신 근육을 사용합니다.",
+                "★★★★☆",
+                R.drawable.ic_medball));
+
+        list.add(new Exercise(
+                "슬로우 조깅",
+                "저강도 유산소 + 체지방 감소\n\n[방법] 말하기 가능한 속도로 천천히 뛰어줍니다.",
+                "★☆☆☆☆",
+                R.drawable.ic_slowjog));
+
+        list.add(new Exercise(
+                "파크골프",
+                "집중력·유연성 향상\n\n[방법] 짧은 거리의 퍼팅을 반복하며 자연스럽게 운동 효과를 얻습니다.",
+                "★☆☆☆☆",
+                R.drawable.ic_parkgolf));
+
+        list.add(new Exercise(
+                "보조\n풀업",
+                "등근육 + 팔 힘 향상\n\n[방법] 철봉에서 발을 살짝 디디고 천천히 몸을 위로 당깁니다.",
+                "★★★☆☆",
+                R.drawable.ic_pullup));
 
         return list;
     }
