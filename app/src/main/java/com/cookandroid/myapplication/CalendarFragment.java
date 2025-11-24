@@ -17,8 +17,10 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 public class CalendarFragment extends Fragment {
 
@@ -26,6 +28,10 @@ public class CalendarFragment extends Fragment {
     LinearLayout listContainer;
     TextView tvMonthTitle;
     ImageView btnPrev, btnNext;
+
+    // DB 연동 및 실제 데이터 저장 변수
+    private DBHelper dbHelper;
+    private HashMap<Integer, List<Record>> dailyRecordMap = new HashMap<>();
 
     // 현재 달 이동 값(0 = 이번달, -1 = 이전달, +1 = 다음달)
     int monthOffset = 0;
@@ -47,11 +53,7 @@ public class CalendarFragment extends Fragment {
         btnPrev = v.findViewById(R.id.btn_prev_month);
         btnNext = v.findViewById(R.id.btn_next_month);
 
-        // 예시 데이터
-        recordMap.put(3, "스쿼트 · 😊");
-        recordMap.put(7, "플랭크 · 😐");
-        recordMap.put(11, "요가 · 😊");
-        recordMap.put(24, "달리기 · 😃");
+        dbHelper = new DBHelper(getContext());
 
         buildCalendar();
 
@@ -59,12 +61,16 @@ public class CalendarFragment extends Fragment {
         btnPrev.setOnClickListener(vw -> {
             monthOffset--;
             buildCalendar();
+
+            listContainer.removeAllViews();
         });
 
         // ➡ 다음달 버튼
         btnNext.setOnClickListener(vw -> {
             monthOffset++;
             buildCalendar();
+
+            listContainer.removeAllViews();
         });
 
         return v;
@@ -72,6 +78,7 @@ public class CalendarFragment extends Fragment {
 
     private void buildCalendar() {
 
+        loadRecord();
         gridCalendar.removeAllViews();
 
         Calendar calendar = Calendar.getInstance();
@@ -129,7 +136,7 @@ public class CalendarFragment extends Fragment {
             }
 
             // ● 운동 기록
-            if (recordMap.containsKey(dayNum)) {
+            if (dailyRecordMap.containsKey(dayNum)) {
                 tv.append("\n●");
             }
 
@@ -145,10 +152,6 @@ public class CalendarFragment extends Fragment {
 
         listContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View item = inflater.inflate(R.layout.item_record, listContainer, false);
-
-        TextView tvDate = item.findViewById(R.id.tv_record_date);
-        TextView tvInfo = item.findViewById(R.id.tv_record_info);
 
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, monthOffset);
@@ -156,13 +159,82 @@ public class CalendarFragment extends Fragment {
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH) + 1;
 
-        tvDate.setText(year + "년 " + month + "월 " + day + "일");
+        List<Record> records = dailyRecordMap.get(day);
+        if (records != null && !records.isEmpty()) {
+            for (Record record : records) {
+                View item = inflater.inflate(R.layout.item_record, listContainer, false);
 
-        if (recordMap.containsKey(day))
-            tvInfo.setText(recordMap.get(day));
-        else
-            tvInfo.setText("기록 없음");
+                TextView tvDate = item.findViewById(R.id.tv_record_date);
+                TextView tvInfo = item.findViewById(R.id.tv_record_info);
 
-        listContainer.addView(item);
+                tvDate.setText(year + "년 " + month + "월 " + day + "일");
+                String emoji = getMoodEmoji(record.getMood());
+                String info = record.getName() + " · " + emoji;
+                tvInfo.setText(info);
+
+                listContainer.addView(item);
+            }
+        } else {
+            View item = inflater.inflate(R.layout.item_record, listContainer, false);
+            TextView tvDate = item.findViewById(R.id.tv_record_date);
+            TextView tvInfo = item.findViewById(R.id.tv_record_info);
+
+            tvDate.setText(year + "년 " + month + "월 " + day + "일");
+            tvInfo.setText("기록 없음"); // 기록이 없을 때만 표시
+
+            listContainer.addView(item);
+        }
+    }
+
+    private void loadRecord() {
+
+        List<Record> allRecords = dbHelper.getAllRecords();
+
+        dailyRecordMap.clear();
+
+        // 현재 년/월 설정
+        Calendar currentCal = Calendar.getInstance();
+        currentCal.add(Calendar.MONTH, monthOffset);
+        int targetYear = currentCal.get(Calendar.YEAR);
+        int targetMonth = currentCal.get(Calendar.MONTH) + 1;
+
+        for (Record record : allRecords) {
+
+            String[] dateParts = record.getDate().split("-");
+
+            if (dateParts.length < 3) continue;
+
+            try {
+                int recordYear = Integer.parseInt(dateParts[0]);
+                int recordMonth = Integer.parseInt(dateParts[1]);
+
+                if (recordYear == targetYear && recordMonth == targetMonth) {
+
+                    int recordDay = Integer.parseInt(dateParts[2]);
+
+                    // List에 기록을 누적하여 저장
+                    List<Record> recordsForDay = dailyRecordMap.get(recordDay);
+
+                    if (recordsForDay == null) {
+                        recordsForDay = new ArrayList<>();
+                        dailyRecordMap.put(recordDay, recordsForDay);
+                    }
+
+                    recordsForDay.add(record);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private String getMoodEmoji(String mood) {
+        if (mood == null) return "😐";
+        switch (mood) {
+            case "좋음": return "😊";
+            case "보통": return "😐";
+            case "별로": return "😡";
+        }
+        return "😐";
     }
 }

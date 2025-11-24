@@ -51,6 +51,32 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public boolean isRecordExists(String date, String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        boolean exists = false;
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(
+                    TABLE_NAME,
+                    new String[]{COLUMN_ID},
+                    COLUMN_DATE + " = ? AND " + COLUMN_NAME + " = ?",
+                    new String[]{date, name},
+                    null, null, null, "1" // LIMIT 1
+            );
+
+            exists = (cursor.getCount() > 0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return exists;
+    }
+
     public List<Record> getAllRecords() {
         List<Record> recordList = new ArrayList<>();
 

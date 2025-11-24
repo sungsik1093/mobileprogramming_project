@@ -194,6 +194,11 @@ public class CertActivity extends AppCompatActivity {
             return;
         }
 
+        if (dbHelper.isRecordExists(currentDate, currentExerciseName)) {
+            Toast.makeText(this, "이미 해당 날짜에 [" + currentExerciseName + "] 기록이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Record record = new Record(
           currentExerciseName, currentDate, currentPhotoPath, currentLevel, currentMood, memo
         );
