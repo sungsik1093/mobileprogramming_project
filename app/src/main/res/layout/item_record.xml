@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 각 날짜의 운동 기록 아이템 (날짜 + 운동명 + 자세히 버튼) -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:padding="12dp"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:background="#FFFFFF"
+    android:elevation="2dp"
+    android:layout_marginBottom="10dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="#FFFFFF">
+    android:layout_height="wrap_content">
 
-    <!-- 날짜 + 운동명 ui-->
     <TextView
-        android:id="@+id/tv_record_text"
-        android:text="2025-11-17 - 플랭크"
-        android:textSize="16sp"
+        android:id="@+id/tv_record_date"
+        android:text="2025-11-12"
+        android:textStyle="bold"
         android:textColor="#111827"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"/>
-
-    <!-- 상세 기록 페이지 이동 버튼 -->
-    <Button
-        android:id="@+id/btn_detail"
-        android:text="자세히"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tv_record_info"
+        android:text="플랭크 · 난이도 ★★☆ · 기분 😊"
+        android:textColor="#4B5563"
+        android:textSize="14sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
 </LinearLayout>
