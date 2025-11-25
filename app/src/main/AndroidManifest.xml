@@ -56,6 +56,10 @@
             android:name=".CertActivity"
             android:exported="true" />
 
+        <activity android:name=".RecordDetailActivity"
+            android:exported="false">
+        </activity>
+
     </application>
 
 </manifest>

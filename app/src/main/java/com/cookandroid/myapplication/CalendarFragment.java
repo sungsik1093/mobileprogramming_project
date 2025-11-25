@@ -1,5 +1,6 @@
 package com.cookandroid.myapplication;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -171,6 +172,15 @@ public class CalendarFragment extends Fragment {
                 String emoji = getMoodEmoji(record.getMood());
                 String info = record.getName() + " · " + emoji;
                 tvInfo.setText(info);
+
+                // 상세 페이지 이동
+                item.setOnClickListener(v -> {
+                    Intent intent = new Intent(getContext(), RecordDetailActivity.class);
+
+                    intent.putExtra("record_id", record.getId());
+
+                    startActivity(intent);
+                });
 
                 listContainer.addView(item);
             }

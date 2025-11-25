@@ -77,6 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    // 전체 record 가져오기
     public List<Record> getAllRecords() {
         List<Record> recordList = new ArrayList<>();
 
@@ -95,15 +96,15 @@ public class DBHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Record record = new Record(
+                        cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LEVEL)),
                         cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MOOD)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MEMO))
+                        cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MEMO)),
+                        cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP))
                 );
-                // TIMESTAMP는 Record 객체에 세터로 설정
-                record.setTimestamp(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP)));
 
                 recordList.add(record);
             } while (cursor.moveToNext());
@@ -114,5 +115,45 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return recordList;
+    }
+
+    // 하나 record 가져오기
+    public Record getRecordById(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Record record = null;
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(
+                    TABLE_NAME,
+                    null, // 모든 컬럼
+                    COLUMN_ID + " = ?", // ID로 WHERE 조건 설정
+                    new String[]{String.valueOf(id)},
+                    null, null, null, null
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+
+                // 커서에서 모든 데이터 추출
+                long recordId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
+                String date = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE));
+                String photoPath = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO));
+                String level = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LEVEL));
+                String mood = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MOOD));
+                String memo = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MEMO));
+                long timestamp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
+
+                // Record 객체 생성
+                record = new Record(recordId, name, date, photoPath, level, mood, memo, timestamp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return record;
     }
 }

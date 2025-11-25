@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FB"
+    android:fillViewport="true">
+
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:src="@drawable/ic_back_arrow"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"/>
+
+        <TextView
+            android:id="@+id/tv_record_date"
+            android:text="2025-11-12"
+            android:textStyle="bold"
+            android:textColor="#111827"
+            android:textSize="28sp"
+            android:layout_margin="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/tv_record_info"
+            android:text="플랭크 · 난이도 ★★☆ · 기분 😊"
+            android:textColor="#4B5563"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/img_record_photo"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_margin="20dp"
+            android:scaleType="centerCrop"
+            android:background="#E0E0E0"
+            android:contentDescription="운동 인증 사진"
+            android:src="@drawable/ic_plank"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="메모"
+            android:layout_marginStart="23dp"
+            android:layout_marginBottom="5dp"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tv_record_memo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="메모: 오늘의 운동에 대한 상세 내용을 여기에 표시합니다."
+            android:textSize="16sp"
+            android:textColor="#333333"
+            android:padding="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="#F0F0F0"/>
+
+        <Button
+            android:id="@+id/btn_record_share"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="기록 공유"
+            android:layout_margin="20dp"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:padding="16dp"
+            android:backgroundTint="#4C8EFF"/>
+    </LinearLayout>
+</ScrollView>
