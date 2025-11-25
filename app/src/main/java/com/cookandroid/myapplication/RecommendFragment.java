@@ -168,6 +168,11 @@ public class RecommendFragment extends Fragment {
                                 addExerciseCards(gridIndoor, indoor);
                                 break;
 
+                            case "Mist":
+                                // 안개 → 안전 위해 실내 운동 우선
+                                addExerciseCards(gridIndoor, indoor);
+                                break;
+
                             case "Rain":
                             case "Snow":
                             case "Thunderstorm":
@@ -208,6 +213,8 @@ public class RecommendFragment extends Fragment {
                 return "이슬비";
             case "Thunderstorm":
                 return "천둥번개";
+            case "Mist":
+                return "안개";
             default:
                 return w;
         }
@@ -227,6 +234,8 @@ public class RecommendFragment extends Fragment {
                 return "이슬비가 내려요. 가볍게 실내 운동을 해보세요!";
             case "Thunderstorm":
                 return "⚡ 위험한 날씨! 반드시 실내 운동하세요!";
+            case "Mist":
+                return "안개 주의! 시야가 안 좋으니 실내 운동을 추천해요.";
             default:
                 return "오늘은 컨디션에 맞는 운동을 선택해보세요!";
         }
