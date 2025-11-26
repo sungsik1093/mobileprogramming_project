@@ -120,14 +120,14 @@
             android:layout_marginBottom="12dp"/>
 
         <!-- 공유 버튼 -->
-        <Button
+        <!--<Button
             android:id="@+id/btn_share_mate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="메이트에게 공유"
             android:textColor="#FFFFFF"
             android:backgroundTint="#4C8EFF"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"/>-->
 
         <!-- 저장/공유 상태 메시지 -->
         <TextView

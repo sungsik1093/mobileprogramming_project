@@ -109,7 +109,6 @@
         </LinearLayout>
 
 
-        <!-- 날짜 Grid -->
         <GridLayout
             android:id="@+id/grid_calendar"
             android:layout_width="match_parent"

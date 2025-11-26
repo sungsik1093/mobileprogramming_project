@@ -37,7 +37,7 @@ public class CertActivity extends AppCompatActivity {
     private ImageView ivPreview;
     private TextView tvOverlayDate, tvOverlayInfo, tvOverlayLabel, tvResult;
     private EditText etMemo;
-    private Button btnTakePhoto, btnSave, btnShare;
+    private Button btnTakePhoto, btnSave; // 공유 버튼 제거됨
 
     private DBHelper dbHelper;
     private String currentExerciseName;
@@ -48,7 +48,7 @@ public class CertActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_cert); // fragment 레이아웃 그대로 사용
+        setContentView(R.layout.fragment_cert);
 
         // XML 연결
         ivPreview = findViewById(R.id.iv_photo_preview);
@@ -60,11 +60,9 @@ public class CertActivity extends AppCompatActivity {
 
         btnTakePhoto = findViewById(R.id.btn_take_photo);
         btnSave = findViewById(R.id.btn_save_record);
-        btnShare = findViewById(R.id.btn_share_mate);
 
-        // 운동 정보 받기(기분 포함)
+        // 운동 정보 받기
         final String name = getIntent().getStringExtra("exercise_name");
-        final String desc = getIntent().getStringExtra("exercise_desc");
         final String level = getIntent().getStringExtra("exercise_level");
         final int icon = getIntent().getIntExtra("exercise_icon", R.drawable.ic_plank);
         final String mood = getIntent().getStringExtra("exercise_mood");
@@ -75,44 +73,39 @@ public class CertActivity extends AppCompatActivity {
         String levelStar = (level != null) ? level : "☆☆☆";
         String infoText = (name != null ? name : "운동") + " · 난이도 " + levelStar + " · 기분 " + moodEmoji;
 
-        ivPreview.setImageResource(icon); // 운동 이미지
+        ivPreview.setImageResource(icon);
         tvOverlayLabel.setText("오운완!");
         tvOverlayDate.setText(date != null ? date : new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         tvOverlayInfo.setText(infoText);
 
-        // DB 저장을 위해 클래스 멤버 변수 값에 저장
+        // 멤버 변수 저장
         currentExerciseName = (name != null) ? name : "운동";
         currentLevel = (level != null) ? level : "☆☆☆";
         currentMood = (mood != null) ? mood : "보통";
         currentDate = (date != null) ? date : new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-        // 카메라 권한 및 결과 처리 세팅
+        // 카메라 권한/실행
         setupPermissionLauncher();
         setupCameraLauncher();
 
-        // db 헬퍼 초기화
         dbHelper = new DBHelper(this);
 
-        // 버튼 클릭 이벤트
-        btnTakePhoto.setOnClickListener(v -> permissionLauncher.launch(android.Manifest.permission.CAMERA));
+        // 사진 촬영 버튼
+        btnTakePhoto.setOnClickListener(v ->
+                permissionLauncher.launch(android.Manifest.permission.CAMERA)
+        );
 
-        btnSave.setOnClickListener(v -> {
-            saveRecordToDatabase();
-        });
-
-        btnShare.setOnClickListener(v -> tvResult.setText("운동 메이트에게 인증을 보냈습니다! ✨"));
+        // 기록 저장 버튼
+        btnSave.setOnClickListener(v -> saveRecordToDatabase());
     }
 
-    // 카메라 권한 요청
+    // 권한 요청
     private void setupPermissionLauncher() {
         permissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(),
                 isGranted -> {
-                    if (isGranted) {
-                        openCamera();
-                    } else {
-                        Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
-                    }
+                    if (isGranted) openCamera();
+                    else Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
                 }
         );
     }
@@ -120,69 +113,60 @@ public class CertActivity extends AppCompatActivity {
     // 카메라 실행
     private void openCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         if (intent.resolveActivity(getPackageManager()) != null) {
             try {
-                // 1. createImageFile()에서 currentPhotoPath 저장됨
                 photoFile = createImageFile();
                 if (photoFile != null) {
                     Uri photoUri = FileProvider.getUriForFile(
                             this,
-                            getPackageName() + ".provider", // authority: 반드시 Manifest/paths와 일치
+                            getPackageName() + ".provider",
                             photoFile
                     );
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                     cameraLauncher.launch(intent);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "사진 파일 생성 실패", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "사진 파일 생성 오류", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(this, "카메라 앱이 없습니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // 카메라 결과 받기
+    // 카메라 결과 처리
     private void setupCameraLauncher() {
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        if (currentPhotoPath != null) {
-                            Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
-                            if (bitmap != null) {
-                                ivPreview.setImageBitmap(bitmap);
-                            } else {
-                                Toast.makeText(this, "사진 로드 실패", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(this, "사진 경로 오류", Toast.LENGTH_SHORT).show();
-                        }
+                    if (result.getResultCode() == Activity.RESULT_OK && currentPhotoPath != null) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+                        if (bitmap != null) ivPreview.setImageBitmap(bitmap);
                     }
                 }
         );
     }
 
-    // 이미지 파일 생성
+    // 사진 파일 생성
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String fileName = "IMG_" + timeStamp;
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(fileName, ".jpg", storageDir);
+
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
 
-    // 기분을 이모지로 변환
+    // 기분 → 이모지 변환
     private String convertMoodToEmoji(String mood) {
         if (mood == null) return "😐";
+
         switch (mood) {
             case "좋음": return "😊";
             case "보통": return "😐";
             case "별로": return "😡";
+            default: return "😐";
         }
-        return "😐";
     }
 
     // 기록 저장
@@ -195,24 +179,30 @@ public class CertActivity extends AppCompatActivity {
         }
 
         if (dbHelper.isRecordExists(currentDate, currentExerciseName)) {
-            Toast.makeText(this, "이미 해당 날짜에 [" + currentExerciseName + "] 기록이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "이미 저장된 기록이 있습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Record record = new Record(
-          currentExerciseName, currentDate, currentPhotoPath, currentLevel, currentMood, memo
+                currentExerciseName, currentDate, currentPhotoPath,
+                currentLevel, currentMood, memo
         );
 
         long resultId = insertRecord(record);
 
-        // 저장 결과 표시
         if (resultId > 0) {
             tvResult.setText("오늘의 기록이 저장되었습니다!");
+
+            // 캘린더 화면으로 이동 (MainActivity에 신호 전달)
+            Intent intent = new Intent(CertActivity.this, MainActivity.class);
+            intent.putExtra("open_calendar", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+
+            finish();
         } else {
             tvResult.setText("기록 저장 실패. 다시 시도해주세요.");
         }
-
-
     }
 
     private long insertRecord(Record record) {
@@ -227,8 +217,6 @@ public class CertActivity extends AppCompatActivity {
         values.put(DBHelper.COLUMN_MEMO, record.getMemo());
         values.put(DBHelper.COLUMN_TIMESTAMP, record.getTimestamp());
 
-        long newRowId = db.insert(DBHelper.TABLE_NAME, null, values);
-
-        return newRowId;
+        return db.insert(DBHelper.TABLE_NAME, null, values);
     }
 }

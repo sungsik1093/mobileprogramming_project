@@ -11,14 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- 🔙 BACK -->
         <ImageView
             android:id="@+id/btn_back"
             android:src="@drawable/ic_back_arrow"
             android:layout_width="30dp"
             android:layout_height="30dp" />
 
-        <!-- 🟦 Title -->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
@@ -29,7 +27,6 @@
             android:textSize="26sp"
             android:textStyle="bold" />
 
-        <!-- 🖼 운동 이미지 영역 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,7 +43,6 @@
                 android:src="@drawable/ic_plank"/>
         </LinearLayout>
 
-        <!-- 📘 운동 정보 카드  -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -56,7 +52,6 @@
             android:elevation="4dp"
             android:layout_marginTop="28dp">
 
-            <!-- 운동명 -->
             <TextView
                 android:id="@+id/tv_ex_name"
                 android:text="플랭크"
@@ -66,7 +61,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-            <!-- 난이도 별 -->
             <LinearLayout
                 android:id="@+id/layout_stars"
                 android:orientation="horizontal"
@@ -74,7 +68,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-            <!-- 운동 설명 -->
             <TextView
                 android:id="@+id/tv_ex_desc"
                 android:layout_width="match_parent"
@@ -85,7 +78,6 @@
                 android:textSize="16sp"/>
         </LinearLayout>
 
-        <!-- CTA 버튼 -->
         <Button
             android:id="@+id/btn_start_exercise"
             android:layout_width="match_parent"

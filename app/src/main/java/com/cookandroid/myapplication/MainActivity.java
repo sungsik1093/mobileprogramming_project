@@ -63,4 +63,19 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }
+    /*수정*/
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (getIntent() != null && getIntent().getBooleanExtra("open_calendar", false)) {
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new CalendarFragment())
+                    .commit();
+            getIntent().removeExtra("open_calendar");
+        }
+    }
+
 }
