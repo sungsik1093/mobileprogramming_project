@@ -30,15 +30,13 @@ public class CalendarFragment extends Fragment {
     TextView tvMonthTitle;
     ImageView btnPrev, btnNext;
 
-    // DB 연동 및 실제 데이터 저장 변수
     private DBHelper dbHelper;
     private HashMap<Integer, List<Record>> dailyRecordMap = new HashMap<>();
 
-    // 현재 달 이동 값(0 = 이번달, -1 = 이전달, +1 = 다음달)
     int monthOffset = 0;
 
-    // 예시 운동 기록 데이터
-    HashMap<Integer, String> recordMap = new HashMap<>();
+    // ⭐ 선택된 날짜 저장
+    private int selectedDay = -1;
 
     @Nullable
     @Override
@@ -58,19 +56,17 @@ public class CalendarFragment extends Fragment {
 
         buildCalendar();
 
-        // ⬅ 이전달 버튼
         btnPrev.setOnClickListener(vw -> {
             monthOffset--;
+            selectedDay = -1;   // 월 이동 시 선택 초기화
             buildCalendar();
-
             listContainer.removeAllViews();
         });
 
-        // ➡ 다음달 버튼
         btnNext.setOnClickListener(vw -> {
             monthOffset++;
+            selectedDay = -1;
             buildCalendar();
-
             listContainer.removeAllViews();
         });
 
@@ -83,22 +79,22 @@ public class CalendarFragment extends Fragment {
         gridCalendar.removeAllViews();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, monthOffset); // ← 핵심 : 이동된 월로 세팅
+        calendar.add(Calendar.MONTH, monthOffset);
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
 
-        // 상단 월 제목 업데이트
         tvMonthTitle.setText(year + "년 " + (month + 1) + "월");
 
-        // 날짜 계산 시작
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         int firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
         int maxDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 
-        int todayYear = Calendar.getInstance().get(Calendar.YEAR);
-        int todayMonth = Calendar.getInstance().get(Calendar.MONTH);
-        int todayDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        // 오늘 날짜
+        Calendar today = Calendar.getInstance();
+        int todayYear = today.get(Calendar.YEAR);
+        int todayMonth = today.get(Calendar.MONTH);
+        int todayDay = today.get(Calendar.DAY_OF_MONTH);
 
         int dayNum = 1;
 
@@ -131,18 +127,27 @@ public class CalendarFragment extends Fragment {
             if (i % 7 == 0) tv.setTextColor(Color.parseColor("#E53935"));
             if (i % 7 == 6) tv.setTextColor(Color.parseColor("#1E88E5"));
 
-            // 오늘 표시 (달이 같을 때만)
-            if (year == todayYear && month == todayMonth && dayNum == todayDay) {
-                tv.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_today_border));
+            boolean isToday = (year == todayYear && month == todayMonth && dayNum == todayDay);
+            boolean isSelected = (dayNum == selectedDay);
+
+            // ⭐ 선택 / 오늘 순서 중요!
+            if (isSelected) {
+                tv.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_selected_border));
+            } else if (isToday) {
+                tv.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.bg_today_gray_border));
             }
 
-            // ● 운동 기록
             if (dailyRecordMap.containsKey(dayNum)) {
                 tv.append("\n●");
             }
 
-            final int selectedDay = dayNum;
-            tv.setOnClickListener(v -> showRecord(selectedDay));
+            final int dayCopy = dayNum;
+
+            tv.setOnClickListener(v -> {
+                selectedDay = dayCopy;
+                buildCalendar();
+                showRecord(dayCopy);
+            });
 
             gridCalendar.addView(tv);
             dayNum++;
@@ -170,15 +175,11 @@ public class CalendarFragment extends Fragment {
 
                 tvDate.setText(year + "년 " + month + "월 " + day + "일");
                 String emoji = getMoodEmoji(record.getMood());
-                String info = record.getName() + " · " + emoji;
-                tvInfo.setText(info);
+                tvInfo.setText(record.getName() + " · " + emoji);
 
-                // 상세 페이지 이동
                 item.setOnClickListener(v -> {
                     Intent intent = new Intent(getContext(), RecordDetailActivity.class);
-
                     intent.putExtra("record_id", record.getId());
-
                     startActivity(intent);
                 });
 
@@ -190,7 +191,7 @@ public class CalendarFragment extends Fragment {
             TextView tvInfo = item.findViewById(R.id.tv_record_info);
 
             tvDate.setText(year + "년 " + month + "월 " + day + "일");
-            tvInfo.setText("기록 없음"); // 기록이 없을 때만 표시
+            tvInfo.setText("기록 없음");
 
             listContainer.addView(item);
         }
@@ -202,7 +203,6 @@ public class CalendarFragment extends Fragment {
 
         dailyRecordMap.clear();
 
-        // 현재 년/월 설정
         Calendar currentCal = Calendar.getInstance();
         currentCal.add(Calendar.MONTH, monthOffset);
         int targetYear = currentCal.get(Calendar.YEAR);
@@ -222,7 +222,6 @@ public class CalendarFragment extends Fragment {
 
                     int recordDay = Integer.parseInt(dateParts[2]);
 
-                    // List에 기록을 누적하여 저장
                     List<Record> recordsForDay = dailyRecordMap.get(recordDay);
 
                     if (recordsForDay == null) {
