@@ -72,15 +72,5 @@
             android:layout_marginEnd="20dp"
             android:background="#F0F0F0"/>
 
-        <Button
-            android:id="@+id/btn_record_share"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="기록 공유"
-            android:layout_margin="20dp"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:padding="16dp"
-            android:backgroundTint="#4C8EFF"/>
     </LinearLayout>
 </ScrollView>

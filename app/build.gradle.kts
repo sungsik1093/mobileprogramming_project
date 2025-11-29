@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -7,6 +9,15 @@ android {
     namespace = "com.cookandroid.myapplication"
     compileSdk = 36
 
+    buildFeatures {
+        buildConfig = true
+    }
+
+    val localProps = gradleLocalProperties(rootDir, providers)
+
+    val MAPS_KEY = localProps.getProperty("MAPS_API_KEY") ?: ""
+    val PLACES_KEY = localProps.getProperty("PLACES_API_KEY") ?: ""
+
     defaultConfig {
         applicationId = "com.cookandroid.myapplication"
         minSdk = 24
@@ -15,6 +26,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "MAPS_API_KEY", "\"$MAPS_KEY\"")
+        buildConfigField("String", "PLACES_API_KEY", "\"$PLACES_KEY\"")
+        manifestPlaceholders["MAPS_API_KEY"] = MAPS_KEY
+        manifestPlaceholders["PLACES_API_KEY"] = PLACES_KEY
+
     }
 
     buildTypes {
@@ -45,11 +62,14 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     // volley
-    implementation ("com.android.volley:volley:1.2.1")
+    implementation("com.android.volley:volley:1.2.1")
     // Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     // 위치 서비스
-    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    // 지도 서비스
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.libraries.places:places:3.4.0")
 
 }

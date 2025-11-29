@@ -3,7 +3,6 @@ package com.cookandroid.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,22 +30,10 @@ public class MainActivity extends AppCompatActivity {
                 selected = new HomeFragment();
             } else if (id == R.id.nav_recommend) {
                 selected = new RecommendFragment();
-            } else if (id == R.id.nav_cert) {
-
-                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                String mood = "보통"; // 기본값
-
-                if (currentFragment instanceof HomeFragment) {
-                    mood = ((HomeFragment) currentFragment).getSelectedMood();
-                    if (mood == null) mood = "보통"; // 선택 안 했으면 기본
-                }
-
-                Intent intent = new Intent(MainActivity.this, CertActivity.class);
-                intent.putExtra("exercise_mood", mood);
-                startActivity(intent);
-                return true;
             } else if (id == R.id.nav_record) {
                 selected = new CalendarFragment();
+            } else if (id == R.id.nav_map) {
+                selected = new MapFragment();
             }
 
             if (selected != null) {

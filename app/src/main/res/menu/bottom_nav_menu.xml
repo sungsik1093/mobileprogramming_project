@@ -10,15 +10,14 @@
         android:id="@+id/nav_recommend"
         android:title="운동"
         android:icon="@drawable/ic_recommend" />
-    <!--fragment_cer.xml파일로 이동 버튼 -->
-    <item
-        android:id="@+id/nav_cert"
-        android:title="인증"
-        android:icon="@drawable/ic_cert" />
     <!--fragment_calendar.xml파일로 이동 버튼 -->
     <item
         android:id="@+id/nav_record"
         android:title="기록"
         android:icon="@drawable/ic_record" />
+    <item
+        android:id="@+id/nav_map"
+        android:title="지도"
+        android:icon="@drawable/ic_map" />
 
 </menu>

@@ -13,7 +13,6 @@ public class RecordDetailActivity extends AppCompatActivity {
 
     private TextView tvDate, tvInfo, tvMemo;
     private ImageView imgPhoto;
-    private Button btnShare;
     private DBHelper dbHelper;
 
     @Override
@@ -25,7 +24,6 @@ public class RecordDetailActivity extends AppCompatActivity {
         tvInfo = findViewById(R.id.tv_record_info);
         tvMemo = findViewById(R.id.tv_record_memo);
         imgPhoto = findViewById(R.id.img_record_photo);
-        btnShare = findViewById(R.id.btn_record_share);
 
         ImageView btnBack = findViewById(R.id.btn_back);
         btnBack.setOnClickListener(v -> finish());
@@ -39,11 +37,6 @@ public class RecordDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "기록 ID를 찾을 수 없습니다.", Toast.LENGTH_LONG).show();
             finish();
         }
-
-        btnShare.setOnClickListener(v -> {
-            // 공유 기능 로직 구현
-            Toast.makeText(this, "기록 공유 버튼 클릭됨", Toast.LENGTH_SHORT).show();
-        });
     }
 
     private void loadRecordDetails(long id) {

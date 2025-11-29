@@ -60,6 +60,11 @@
             android:exported="false">
         </activity>
 
+        <!-- 지도 -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
     </application>
 
 </manifest>

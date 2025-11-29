@@ -15,4 +15,5 @@ public class RetrofitClient {
         }
         return retrofit.create(WeatherApi.class);
     }
+
 }
