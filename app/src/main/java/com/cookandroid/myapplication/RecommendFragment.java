@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Iterator;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -144,48 +145,23 @@ public class RecommendFragment extends Fragment {
                         gridIndoor.removeAllViews();
                         gridOutdoor.removeAllViews();
 
-                        switch (weather) {
-                            case "Clear":
-                                // 맑음 → 실외 + 실내 전체
-                                addExerciseCards(gridIndoor, indoor);
-                                addExerciseCards(gridOutdoor, outdoor);
-                                break;
+                        // 1) 날씨 기반 1차 필터링
+                        ArrayList<Exercise> filteredIndoor = new ArrayList<>(indoor);
+                        ArrayList<Exercise> filteredOutdoor = filterOutdoorByWeather(weather, outdoor);
 
-                            case "Clouds":
-                                // 흐림 → 산책 등 실외 기본 운동 + 실내 전체
-                                ArrayList<Exercise> cloudsOutdoor = new ArrayList<>();
-                                for (Exercise ex : outdoor) {
-                                    if (ex.name.contains("조깅") || ex.name.contains("파워워킹")) {
-                                        cloudsOutdoor.add(ex);
-                                    }
-                                }
-                                addExerciseCards(gridIndoor, indoor);
-                                addExerciseCards(gridOutdoor, cloudsOutdoor);
-                                break;
+                        // 2) 온도 기반 필터링
+                        applyTemperatureFilter(temp, filteredIndoor, filteredOutdoor);
 
-                            case "Drizzle":
-                                // 이슬비 → 실내 운동만
-                                addExerciseCards(gridIndoor, indoor);
-                                break;
+                        // 3) 기분 기반 필터링
+                        String mood = selectedMood; // "good", "normal", "bad" 등 네가 가진 변수 사용
+                        applyMoodFilter(mood, filteredIndoor, filteredOutdoor);
 
-                            case "Mist":
-                                // 안개 → 안전 위해 실내 운동 우선
-                                addExerciseCards(gridIndoor, indoor);
-                                break;
+                        // 4) UI 적용
+                        if (!filteredIndoor.isEmpty())
+                            addExerciseCards(gridIndoor, filteredIndoor);
 
-                            case "Rain":
-                            case "Snow":
-                            case "Thunderstorm":
-                                // 위험한 날씨 → 실내 운동만
-                                addExerciseCards(gridIndoor, indoor);
-                                break;
-
-                            default:
-                                // 예외 → 실내 + 실외 전체
-                                addExerciseCards(gridIndoor, indoor);
-                                addExerciseCards(gridOutdoor, outdoor);
-                                break;
-                        }
+                        if (!filteredOutdoor.isEmpty())
+                            addExerciseCards(gridOutdoor, filteredOutdoor);
 
                         layoutRecommend.setVisibility(View.VISIBLE);
 
@@ -198,6 +174,70 @@ public class RecommendFragment extends Fragment {
 
         queue.add(request);
     }
+
+    private ArrayList<Exercise> filterOutdoorByWeather(String weather, ArrayList<Exercise> outdoor) {
+        ArrayList<Exercise> result = new ArrayList<>();
+
+        switch (weather) {
+            case "Clear":
+                result.addAll(outdoor);
+                break;
+
+            case "Clouds":
+                for (Exercise ex : outdoor) {
+                    if (ex.name.contains("조깅") || ex.name.contains("파워워킹") || ex.name.contains("스트레칭")|| ex.name.contains("슬로우 조깅")) {
+                        result.add(ex);
+                    }
+                }
+                break;
+
+            case "Drizzle":
+            case "Mist":
+            case "Rain":
+            case "Snow":
+            case "Thunderstorm":
+                break;
+
+            default:
+                result.addAll(outdoor);
+                break;
+        }
+        return result;
+    }
+
+    private void applyTemperatureFilter(double temp,
+                                        ArrayList<Exercise> indoor,
+                                        ArrayList<Exercise> outdoor) {
+
+        if (temp < 5) {
+            outdoor.clear();
+        } else if (temp > 20) {
+            indoor.clear();
+        }
+    }
+
+    private void applyMoodFilter(String mood,
+                                 ArrayList<Exercise> indoor,
+                                 ArrayList<Exercise> outdoor) {
+
+        if (mood == null) return;
+
+        switch (mood) {
+            case "좋음":
+                filterByEnergy(indoor, outdoor, true);  // ★★★ 이상
+                break;
+
+            case "보통":
+                // 필터 안 함
+                break;
+
+            case "별로":
+                filterByEnergy(indoor, outdoor, false); // 저강도만
+                break;
+        }
+    }
+
+
 
     private String translateWeather(String w) {
         switch (w) {
@@ -411,6 +451,10 @@ public class RecommendFragment extends Fragment {
                 "척추 안정성 & 코어 강화\n\n[방법] 네발 기기 자세에서 반대 팔·다리를 천천히 뻗어 유지합니다.",
                 "★★☆☆☆", R.drawable.ic_birddog));
 
+        list.add(new Exercise(
+                "스트레칭",
+                "가볍게 시작하기 좋음\n\n[방법] 목·어깨·팔·허리·다리 등 부위별로 천천히 늘리고, 깊게 숨 쉬면서 10~30초 유지합니다.",
+                "★★☆☆☆", R.drawable.ic_stretching));            // (2/5)
 
         return list;
     }
@@ -499,6 +543,36 @@ public class RecommendFragment extends Fragment {
                 R.drawable.ic_pullup));
 
         return list;
+    }
+
+    private void filterByEnergy(ArrayList<Exercise> indoor,
+                                ArrayList<Exercise> outdoor,
+                                boolean wantHighEnergy) {
+
+        ArrayList<Exercise>[] lists = new ArrayList[]{indoor, outdoor};
+
+        for (ArrayList<Exercise> list : lists) {
+            Iterator<Exercise> it = list.iterator();
+
+            while (it.hasNext()) {
+                Exercise ex = it.next();
+                if (ex.level == null) { // NPE 방어
+                    it.remove();
+                    continue;
+                }
+
+                boolean isHighOrMid = ex.level.startsWith("★★★") ||
+                        ex.level.startsWith("★★★★") ||
+                        ex.level.startsWith("★★★★★");
+                boolean isLow = ex.level.startsWith("★☆☆") || ex.level.startsWith("★★☆☆☆");
+
+                if (wantHighEnergy && !isHighOrMid) {   // 좋음: ★★★ 이상만 남기기
+                    it.remove();
+                } else if (!wantHighEnergy && !isLow) { // 별로: 저강도만
+                    it.remove();
+                }
+            }
+        }
     }
 
 
