@@ -13,122 +13,148 @@
             android:text="🏃 운동할 장소 찾기"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="16dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp">
+            android:layout_marginBottom="10dp">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_checkbox_item"
-                android:layout_marginEnd="3dp">
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp">
+
                 <CheckBox
                     android:id="@+id/check_gym"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="헬스장" />
+                    android:text="헬스장"
+                    android:textSize="15sp"
+                    android:paddingStart="4dp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_checkbox_item"
-                android:layout_marginStart="3dp">
+                android:layout_weight="1"
+                android:layout_marginStart="8dp">
+
                 <CheckBox
                     android:id="@+id/check_park"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="공원" />
+                    android:text="공원"
+                    android:textSize="15sp"
+                    android:paddingStart="4dp" />
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp">
+            android:layout_marginBottom="16dp">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_checkbox_item"
-                android:layout_marginEnd="3dp">
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp">
+
                 <CheckBox
                     android:id="@+id/check_track"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="운동장" />
+                    android:text="운동장"
+                    android:textSize="15sp"
+                    android:paddingStart="4dp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
                 android:background="@drawable/bg_checkbox_item"
-                android:layout_marginStart="3dp">
+                android:layout_weight="1"
+                android:layout_marginStart="8dp">
+
                 <CheckBox
                     android:id="@+id/check_center"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="체육센터" />
+                    android:text="체육센터"
+                    android:textSize="15sp"
+                    android:paddingStart="4dp" />
             </LinearLayout>
+
         </LinearLayout>
 
+        <!-- 지도 -->
         <FrameLayout
             android:id="@+id/map_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <!-- 지도 -->
             <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <!-- 지도 위에 겹쳐지는 줌 버튼 -->
+            <!-- 줌 버튼 -->
             <LinearLayout
                 android:id="@+id/zoom_container"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
-                android:layout_margin="16dp">
+                android:layout_margin="20dp">
 
                 <TextView
                     android:id="@+id/btn_zoom_in"
                     android:text="+"
-                    android:gravity="center"
                     android:textSize="26sp"
+                    android:gravity="center"
                     android:textColor="#000000"
-                    android:background="#80AAAAAA"
+                    android:background="#80FFFFFF"
                     android:layout_width="48dp"
-                    android:layout_height="48dp" />
+                    android:layout_height="48dp"
+                    android:elevation="6dp"
+                    android:padding="6dp" />
 
                 <TextView
                     android:id="@+id/btn_zoom_out"
                     android:text="-"
-                    android:gravity="center"
                     android:textSize="26sp"
+                    android:gravity="center"
                     android:textColor="#000000"
-                    android:background="#80AAAAAA"
-                    android:layout_marginTop="8dp"
+                    android:background="#80FFFFFF"
                     android:layout_width="48dp"
-                    android:layout_height="48dp" />
+                    android:layout_height="48dp"
+                    android:layout_marginTop="12dp"
+                    android:elevation="6dp"
+                    android:padding="6dp" />
             </LinearLayout>
 
         </FrameLayout>
