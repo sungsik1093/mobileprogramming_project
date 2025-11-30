@@ -122,41 +122,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <!-- 줌 버튼 -->
-            <LinearLayout
-                android:id="@+id/zoom_container"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="20dp">
-
-                <TextView
-                    android:id="@+id/btn_zoom_in"
-                    android:text="+"
-                    android:textSize="26sp"
-                    android:gravity="center"
-                    android:textColor="#000000"
-                    android:background="#80FFFFFF"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:elevation="6dp"
-                    android:padding="6dp" />
-
-                <TextView
-                    android:id="@+id/btn_zoom_out"
-                    android:text="-"
-                    android:textSize="26sp"
-                    android:gravity="center"
-                    android:textColor="#000000"
-                    android:background="#80FFFFFF"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="12dp"
-                    android:elevation="6dp"
-                    android:padding="6dp" />
-            </LinearLayout>
-
         </FrameLayout>
 
     </LinearLayout>

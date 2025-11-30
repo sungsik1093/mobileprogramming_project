@@ -108,7 +108,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
         // 줌 컨트롤 버튼 활성화
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        LatLng seoul = new LatLng(37.5665, 126.9780);
+        LatLng seoul = new LatLng(37.2215, 127.1868);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 17));
 
         if (hasLocationPermission()) enableMyLocation();
@@ -131,7 +131,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
 
-            if (location != null) {
+            if (false) {
                 // 정상적으로 위치 받아온 경우
                 lastLocation = location;
 
@@ -140,14 +140,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
                 return;
             }
 
-            // 위치가 null인 경우 → 기본 서울 좌표 강제 설정
-            Log.w("PlacesSDK", "Last location NULL → Default Seoul set.");
-
             lastLocation = new android.location.Location("");
-            lastLocation.setLatitude(37.5665);
-            lastLocation.setLongitude(126.9780);
+            lastLocation.setLatitude(37.2215);
+            lastLocation.setLongitude(127.1868);
 
-            LatLng seoul = new LatLng(37.5665, 126.9780);
+            LatLng seoul = new LatLng(37.2215, 127.1868);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 17));
         });
     }
