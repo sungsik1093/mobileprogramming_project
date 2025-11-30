@@ -142,38 +142,58 @@ public class HomeFragment extends Fragment {
         String timeZone = getTimeZone();
 
         switch (mood) {
+
             case "좋음":
                 if (timeZone.equals("morning")) {
-                    list.add("가벼운 조깅 20분");
-                    list.add("요가 스트레칭");
+                    list.add("스쿼트 3세트");
+                    list.add("마운틴클라이머 1분 × 3회");
+                    list.add("조깅 20분");
                 } else if (timeZone.equals("afternoon")) {
-                    list.add("인터벌 달리기");
-                    list.add("버피 테스트 3세트");
+                    list.add("버피테스트 20회 × 3세트");
+                    list.add("인터버러닝 10분");
+                    list.add("점핑잭 50회 × 2세트");
+                    list.add("스프린트 5세트");
                 } else {
-                    list.add("고강도 타바타 10분");
+                    list.add("브이업 15회 × 3세트");
+                    list.add("사이드플랭크 40초 × 2회");
+                    list.add("슬로우 조깅 15분");
                 }
                 break;
+
             case "보통":
                 if (timeZone.equals("morning")) {
-                    list.add("산책 20분");
-                    list.add("플랭크 1분 × 3회");
+                    list.add("플랭크 1분 × 2회");
+                    list.add("힙브릿지 20회");
+                    list.add("가벼운 걷기 10분");
                 } else if (timeZone.equals("afternoon")) {
-                    list.add("스쿼트 3세트");
+                    list.add("런지 15회 × 3세트");
+                    list.add("푸시업 10~15회 × 3세트");
+                    list.add("자전거 타기 20분");
+                    list.add("계단오르기 10분");
                 } else {
-                    list.add("페이스 조절 조깅");
+                    list.add("레그레이즈 15회 × 2세트");
+                    list.add("걷기 런지 10분");
+                    list.add("야외 스트레칭 10분");
                 }
                 break;
+
             case "별로":
                 if (timeZone.equals("morning")) {
-                    list.add("가벼운 스트레칭");
-                    list.add("명상 10분");
+                    list.add("스트레칭 10분");
+                    list.add("데드버그 15회");
+                    list.add("느린 걷기 10~15분");
                 } else if (timeZone.equals("afternoon")) {
-                    list.add("천천히 걷기 20분");
+                    list.add("파워워킹 15분");
+                    list.add("언덕 걷기 10분");
+                    list.add("보조풀업(쉬운 버전) 5회");
                 } else {
-                    list.add("피로 회복 스트레칭");
+                    list.add("천천히 걷기 20분");
+                    list.add("야외 스트레칭 10분");
+                    list.add("버드독 10회 × 2세트");
                 }
                 break;
         }
+
         return list;
     }
 
