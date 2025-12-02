@@ -3,12 +3,14 @@ package com.cookandroid.myapplication;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -99,69 +101,69 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
         return view;
     }
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
+    private void requestLocation() {
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        mMap.setOnCameraIdleListener(this);
-
-        // 줌 컨트롤 버튼 활성화
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-
-        LatLng seoul = new LatLng(37.2215, 127.1868);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 17));
-
-        if (hasLocationPermission()) enableMyLocation();
-        else requestPermissions(
-                new String[]{ Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION },
-                100
-        );
-    }
-
-    private boolean hasLocationPermission() {
-        return ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @SuppressLint("MissingPermission")
-    private void enableMyLocation() {
-        if (!hasLocationPermission()) return;
-
-        mMap.setMyLocationEnabled(true);
+            requestPermissions(
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    100
+            );
+            return;
+        }
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-
-            if (false) {
-                // 정상적으로 위치 받아온 경우
+            if (location != null) {
                 lastLocation = location;
 
-                LatLng my = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(my, 17));
-                return;
+                LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17));
+                mMap.setMyLocationEnabled(true);
+            } else {
+                Toast.makeText(requireContext(),
+                        "위치를 가져올 수 없습니다. 기본 위치를 사용합니다.",
+                        Toast.LENGTH_SHORT).show();
+
+                if (lastLocation == null) {
+                    lastLocation = new Location("manual");
+                    lastLocation.setLatitude(37.2215);
+                    lastLocation.setLongitude(127.1868);
+                }
             }
-
-            lastLocation = new android.location.Location("");
-            lastLocation.setLatitude(37.2215);
-            lastLocation.setLongitude(127.1868);
-
-            LatLng seoul = new LatLng(37.2215, 127.1868);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 17));
         });
+
     }
 
-
-    // 권한 요청 응답 처리
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
 
         if (requestCode == 100) {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                enableMyLocation();
+                requestLocation();
+            } else {
+                Toast.makeText(requireContext(),
+                        "위치 권한이 거부되었습니다. 기본 위치(명지대)를 사용합니다.",
+                        Toast.LENGTH_SHORT).show();
+                // 권한이 없으면 명지대 좌표가 초기값으로 설정된 상태를 유지
             }
         }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setOnCameraIdleListener(this);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+        LatLng myongji = new LatLng(37.2215, 127.1868);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myongji, 17));
+
+        requestLocation();
     }
 
     // 체크박스 선택
@@ -174,16 +176,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
     // 체크박스 검색 (Retrofit NearBy Search)
     private void searchNearbyPlaces(String keyword, Place.Type type) {
 
-        // 1. 권한 및 위치 확인 (기존 로직 유지)
-        if (!hasLocationPermission()) {
-            Log.e("WebAPI", "Location permission not granted.");
-            return;
-        }
-
-        // 2. 기존 마커 제거
+        // 기존 마커 제거
         clearMarkers(keyword);
 
-        // 3. 검색 파라미터 준비
+        // 검색 파라미터 준비
         String locationStr = lastLocation.getLatitude() + "," + lastLocation.getLongitude();
         String typeStr = type.toString().toLowerCase();
         int radius = 5000;
@@ -202,7 +198,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
             markerColor = BitmapDescriptorFactory.HUE_RED; // 기본값
         }
 
-        // 4. Retrofit API 호출 및 응답 처리
+        // Retrofit API 호출 및 응답 처리
         apiService.searchNearby(
                 locationStr,
                 radius,
@@ -271,6 +267,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
     @Override
     public void onCameraIdle() {
         LatLng centerLatLng = mMap.getCameraPosition().target;
+
+        if (lastLocation == null) {
+            lastLocation = new android.location.Location("manual");
+        }
 
         lastLocation.setLatitude(centerLatLng.latitude);
         lastLocation.setLongitude(centerLatLng.longitude);
