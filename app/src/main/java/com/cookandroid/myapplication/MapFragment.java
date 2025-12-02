@@ -52,6 +52,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
     private static final float HUE_TRACK = BitmapDescriptorFactory.HUE_GREEN;
     private static final float HUE_CENTER = BitmapDescriptorFactory.HUE_RED;
 
+    // 명지대 기본 좌표
+    private static final double DEFAULT_LAT = 37.2215;
+    private static final double DEFAULT_LNG = 127.1868;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -107,6 +111,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
                 ActivityCompat.checkSelfPermission(requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+            // 권한 없으면 바로 명지대 사용
+            useMyongjiAsFallback("위치 권한이 없어 명지대를 기본 위치로 사용합니다.");
             requestPermissions(
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     100
@@ -115,25 +121,53 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, OnCamer
         }
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
+            if (isValidLocation(location)) {
+                // 1) 현재 위치 성공
                 lastLocation = location;
-
-                LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                LatLng myLocation = new LatLng(
+                        location.getLatitude(),
+                        location.getLongitude()
+                );
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 17));
-                mMap.setMyLocationEnabled(true);
             } else {
-                Toast.makeText(requireContext(),
-                        "위치를 가져올 수 없습니다. 기본 위치를 사용합니다.",
-                        Toast.LENGTH_SHORT).show();
-
-                if (lastLocation == null) {
-                    lastLocation = new Location("manual");
-                    lastLocation.setLatitude(37.2215);
-                    lastLocation.setLongitude(127.1868);
-                }
+                // 2) 현재 위치 실패 또는 이상한 값 → 명지대
+                useMyongjiAsFallback("현재 위치를 가져올 수 없어 명지대를 기본 위치로 사용합니다.");
             }
-        });
 
+            mMap.setMyLocationEnabled(true);
+        });
+    }
+
+    // 현재 위치가 신뢰 가능한지 체크
+    private boolean isValidLocation(Location location) {
+        if (location == null) return false;
+
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+
+        // 말도 안 되는 0,0 좌표 제외
+        if (lat == 0.0 && lng == 0.0) return false;
+
+        // 에뮬레이터 기본값(구글 본사)도 실패로 취급
+        if (Math.abs(lat - 37.4219983) < 1e-4 && Math.abs(lng + 122.084) < 1e-4) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // 명지대를 기본 위치로 세팅하는 공통 함수
+    private void useMyongjiAsFallback(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+
+        if (lastLocation == null) {
+            lastLocation = new Location("fallback");
+        }
+        lastLocation.setLatitude(DEFAULT_LAT);
+        lastLocation.setLongitude(DEFAULT_LNG);
+
+        LatLng myongji = new LatLng(DEFAULT_LAT, DEFAULT_LNG);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myongji, 17));
     }
 
     @Override

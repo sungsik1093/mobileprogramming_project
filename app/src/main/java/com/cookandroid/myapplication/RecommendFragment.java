@@ -3,6 +3,7 @@ package com.cookandroid.myapplication;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -39,8 +40,8 @@ public class RecommendFragment extends Fragment {
     LinearLayout layoutRecommend;
     private FusedLocationProviderClient fusedLocationClient;
     private final String API_KEY = "b173bcdd6617f3a5dc76e5136f9ba1c0";
-    private double userLat = 37.5501;
-    private double userLon = 126.9237;
+    private double userLat = 37.2215;
+    private double userLon = 127.1868;
 
     private String selectedMood; // 기분 정보
 
@@ -78,6 +79,21 @@ public class RecommendFragment extends Fragment {
         return v;
     }
 
+    private boolean isValidLocation(Location location) {
+        if (location == null) return false;
+
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+
+        // 0,0 같은 이상한 좌표 제외
+        if (lat == 0.0 && lon == 0.0) return false;
+
+        // 에뮬레이터 기본값(구글 본사)도 실패로 취급
+        if (Math.abs(lat - 37.4219983) < 1e-4 && Math.abs(lon + 122.084) < 1e-4) {
+            return false;
+        }
+        return true;
+    }
 
     private void requestLocation() {
         if (ActivityCompat.checkSelfPermission(requireContext(),
@@ -93,10 +109,11 @@ public class RecommendFragment extends Fragment {
         }
 
         fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location != null) {
+            if (isValidLocation(location)) {
                 userLat = location.getLatitude();
                 userLon = location.getLongitude();
             }
+            // 유효하지 않으면 userLat/userLon 은 그대로 명지대 값 유지
             fetchWeather();
         });
     }

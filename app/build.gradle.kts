@@ -13,7 +13,7 @@ android {
         buildConfig = true
     }
 
-    val localProps = gradleLocalProperties(rootDir, providers)
+    val localProps = gradleLocalProperties(rootDir)
 
 
     val MAPS_KEY = localProps.getProperty("MAPS_API_KEY") ?: ""
